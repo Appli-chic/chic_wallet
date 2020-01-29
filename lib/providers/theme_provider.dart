@@ -21,12 +21,13 @@ class ThemeProvider with ChangeNotifier {
   _generateThemeList() {
     CWTheme _defaultDarkTheme = CWTheme(
       id: DEFAULT_THEME_DARK,
-      backgroundColor: Color(0xFF242B39),
-      secondBackgroundColor: Color(0xFF3F4656),
-      firstColor: Color(0xFFD13447),
-      secondColor: Color(0xFFF15142),
+      backgroundColor: Color(0xFF2A2A33),
+      secondBackgroundColor: Color(0xFF232228),
+      firstColor: Color(0xFF5C0FF6),
+      secondColor: Color(0xFF9813F8),
+      thirdColor: Color(0xFFA651F6),
       textColor: Color(0xFFFFFFFF),
-      secondTextColor: Color(0xFFBABABA),
+      secondTextColor: Color(0xFF67676E),
       isLight: false,
     );
 
@@ -89,6 +90,9 @@ class ThemeProvider with ChangeNotifier {
 
   /// Retrieve the second color corresponding to the [_theme]
   Color get secondColor => _theme.secondColor;
+
+  /// Retrieve the third color corresponding to the [_theme]
+  Color get thirdColor => _theme.thirdColor;
 
   /// Retrieve the text color corresponding to the [_theme]
   Color get textColor => _theme.textColor;

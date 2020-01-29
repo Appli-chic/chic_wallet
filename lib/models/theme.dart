@@ -6,6 +6,7 @@ class CWTheme {
   final Color secondBackgroundColor;
   final Color firstColor;
   final Color secondColor;
+  final Color thirdColor;
   final Color textColor;
   final Color secondTextColor;
   final bool isLight;
@@ -16,6 +17,7 @@ class CWTheme {
     @required this.secondBackgroundColor,
     @required this.firstColor,
     @required this.secondColor,
+    @required this.thirdColor,
     @required this.textColor,
     @required this.secondTextColor,
     @required this.isLight,
