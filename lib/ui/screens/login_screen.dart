@@ -1,6 +1,9 @@
 import 'package:chic_wallet/localization/app_translations.dart';
+import 'package:chic_wallet/models/api_error.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
+import 'package:chic_wallet/services/auth_service.dart';
 import 'package:chic_wallet/ui/components/app_bar_image.dart';
+import 'package:chic_wallet/ui/components/error_form.dart';
 import 'package:chic_wallet/ui/components/rounded_button.dart';
 import 'package:chic_wallet/ui/components/text_field_underline.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   ThemeProvider _themeProvider;
+  AuthService _authService;
   bool _isLoading = false;
   List<String> _errorList = [];
 
@@ -65,7 +69,32 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       if (isValid) {
+        try {
+          await _authService.login(
+              _emailController.text, _passwordController.text);
 
+          setState(() {
+            _isLoading = false;
+          });
+
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, '/');
+        } catch (e) {
+          setState(() {
+            _isLoading = false;
+          });
+
+          if (e is ApiError) {
+            if (e.message == ERROR_EMAIL_OR_PASSWORD_INCORRECT) {
+              errorList.add(AppTranslations.of(context)
+                  .text("login_error_email_password_not_matching"));
+            } else {
+              errorList.add(AppTranslations.of(context).text("error_server"));
+            }
+          } else {
+            errorList.add(AppTranslations.of(context).text("error_server"));
+          }
+        }
       } else {
         setState(() {
           _isLoading = false;
@@ -81,10 +110,24 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  /// Displays the errors from the [_errorList]
+  Widget _displayError() {
+    if (_errorList.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 32, left: 32, right: 32),
+        child: ErrorForm(errorList: _errorList),
+      );
+    } else {
+      return Container();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+    _authService = Provider.of<AuthService>(context);
+
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -108,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.all(16.0),
                     child: Center(
                       child: Text(
-                        'Login',
+                        AppTranslations.of(context).text("login_login"),
                         style: TextStyle(
                           color: _themeProvider.textColor,
                           fontSize: 24,
@@ -120,31 +163,36 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.only(top: 16, bottom: 16),
                     child: TextFieldUnderline(
                       controller: _emailController,
-                      hint: "Email",
+                      hint: AppTranslations.of(context).text("login_email"),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 16, bottom: 16),
                     child: TextFieldUnderline(
                       controller: _passwordController,
-                      hint: "Password",
+                      hint: AppTranslations.of(context).text("login_password"),
                       isObscure: true,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 16, top: 8),
                     child: Text(
-                      'Lost your password?',
+                      AppTranslations.of(context)
+                          .text("login_lost_your_password"),
                       style: TextStyle(color: _themeProvider.textColor),
                     ),
                   ),
+                  _displayError(),
                 ],
               ),
               Column(
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: RoundedButton(onClick: _login),
+                    child: RoundedButton(
+                      onClick: _login,
+                      text: AppTranslations.of(context).text("login_login").toUpperCase(),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -153,12 +201,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          'No account yet? ',
+                          AppTranslations.of(context)
+                              .text("login_no_account_yet"),
                           style:
                               TextStyle(color: _themeProvider.secondTextColor),
                         ),
                         Text(
-                          'Sign up now',
+                          AppTranslations.of(context).text("login_sign_up_now"),
                           style: TextStyle(
                             color: _themeProvider.textColor,
                             fontWeight: FontWeight.bold,

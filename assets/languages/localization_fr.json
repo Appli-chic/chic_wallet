@@ -1,4 +1,12 @@
 {
+  "login_login": "Se connecter",
   "login_email": "Courriel",
-  "login_password": "Mot de passe"
+  "login_password": "Mot de passe",
+  "login_lost_your_password": "Mot de passe perdu?",
+  "login_no_account_yet": "Pas encore de compte? ",
+  "login_sign_up_now": "S'inscrire maintenant",
+  "login_email_not_valid": "Courriel non valide",
+  "login_email_password_too_short": "le mot de passe doit faire au moins 6 caractères.",
+  "login_error_email_password_not_matching": "Courriel ou mot de passe incorrect.",
+  "error_server": "Impossible de contacter le serveur."
 }

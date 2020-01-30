@@ -1,4 +1,12 @@
 {
+  "login_login": "Login",
   "login_email": "Email",
-  "login_password": "Password"
+  "login_password": "Password",
+  "login_lost_your_password": "Lost your password?",
+  "login_no_account_yet": "No account yet? ",
+  "login_sign_up_now": "Sign up now",
+  "login_email_not_valid": "Email is not valid.",
+  "login_email_password_too_short": "The password must be at least 6 characters.",
+  "login_error_email_password_not_matching": "Email or password incorrect.",
+  "error_server": "Impossible to reach the server."
 }

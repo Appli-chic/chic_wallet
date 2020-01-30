@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 
 class RoundedButton extends StatefulWidget {
   final Function onClick;
+  final String text;
 
   RoundedButton({
     @required this.onClick,
+    @required this.text,
   });
 
   @override
@@ -39,7 +41,7 @@ class _RoundedButtonState extends State<RoundedButton> {
           constraints: const BoxConstraints(minWidth: 88.0, minHeight: 50.0),
           alignment: Alignment.center,
           child: Text(
-            'OK',
+            widget.text,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: _themeProvider.textColor,
