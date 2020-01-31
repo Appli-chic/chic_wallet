@@ -175,7 +175,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       AppBarImage(
-                        imageUrl: 'assets/login.jpg',
+                        imageUrl: 'assets/signup.jpg',
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16.0),

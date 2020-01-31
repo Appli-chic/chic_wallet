@@ -10,7 +10,7 @@ import 'localization/app_translations_delegate.dart';
 import 'localization/application.dart';
 import 'models/env.dart';
 import 'providers/theme_provider.dart';
-import 'ui/screens/home_screen.dart';
+import 'ui/screens/main_screen.dart';
 
 void main() => runApp(App());
 
@@ -73,7 +73,7 @@ class _AppState extends State<App> {
         initialRoute: '/splash',
         routes: {
           '/splash': (context) => SplashScreen(),
-          '/': (context) => HomeScreen(),
+          '/': (context) => MainScreen(),
           '/login': (context) => LoginScreen(),
           '/signup': (context) => SignUpScreen(),
         },
