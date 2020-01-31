@@ -6,11 +6,17 @@ class TextFieldUnderline extends StatefulWidget {
   final TextEditingController controller;
   final String hint;
   final bool isObscure;
+  final FocusNode focus;
+  final TextInputAction textInputAction;
+  final Function(String) onSubmitted;
 
   TextFieldUnderline({
     @required this.controller,
     @required this.hint,
     this.isObscure = false,
+    this.focus,
+    this.onSubmitted,
+    this.textInputAction = TextInputAction.next,
   });
 
   @override
@@ -25,10 +31,12 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
     return TextField(
+      focusNode: widget.focus,
       controller: widget.controller,
       keyboardType: TextInputType.emailAddress,
-      textInputAction: TextInputAction.continueAction,
+      textInputAction: widget.textInputAction,
       obscureText: widget.isObscure,
+      autocorrect: false,
       decoration: InputDecoration(
         labelText: widget.hint,
         labelStyle: TextStyle(color: _themeProvider.secondTextColor),
@@ -48,6 +56,7 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
         ),
       ),
       style: TextStyle(color: _themeProvider.textColor, fontSize: 16),
+      onSubmitted: widget.onSubmitted,
     );
   }
 }

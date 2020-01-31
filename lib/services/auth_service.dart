@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 
 const String ERROR_EMAIL_OR_PASSWORD_INCORRECT = "Email or password incorrect";
+const String ERROR_EMAIL_ALREADY_EXISTS = "User already exists";
 
 class AuthService {
   static String authLogin = "/auth/login";

@@ -46,7 +46,11 @@ class _AppBarImageState extends State<AppBarImage> {
         AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: BackButton(),
+          leading: BackButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
       ],
     );

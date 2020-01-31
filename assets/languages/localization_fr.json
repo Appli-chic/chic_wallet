@@ -8,5 +8,9 @@
   "login_email_not_valid": "Courriel non valide",
   "login_email_password_too_short": "le mot de passe doit faire au moins 6 caractères.",
   "login_error_email_password_not_matching": "Courriel ou mot de passe incorrect.",
-  "error_server": "Impossible de contacter le serveur."
+  "error_server": "Impossible de contacter le serveur.",
+  "sign_up_sign_up": "S'inscrire",
+  "sign_up_confirm_password": "Confirmer le mot de passe",
+  "sign_up_email_already_exists": "Cet utilisateur éxiste déjà.",
+  "sign_up_passwords_not_identical": "Les mots de passe doivent être identiques."
 }
