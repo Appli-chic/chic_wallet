@@ -1,6 +1,7 @@
 import 'package:chic_wallet/services/auth_service.dart';
 import 'package:chic_wallet/ui/screens/login_screen.dart';
 import 'package:chic_wallet/ui/screens/signup_screen.dart';
+import 'package:chic_wallet/ui/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -69,8 +70,9 @@ class _AppState extends State<App> {
           const Locale('en', ''), // English
           const Locale('fr', ''), // French
         ],
-        initialRoute: '/login',
+        initialRoute: '/splash',
         routes: {
+          '/splash': (context) => SplashScreen(),
           '/': (context) => HomeScreen(),
           '/login': (context) => LoginScreen(),
           '/signup': (context) => SignUpScreen(),
