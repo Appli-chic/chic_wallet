@@ -23,6 +23,7 @@ class ThemeProvider with ChangeNotifier {
       id: DEFAULT_THEME_DARK,
       backgroundColor: Color(0xFF2A2A33),
       secondBackgroundColor: Color(0xFF232228),
+      thirdBackgroundColor: Color(0xFF39383E),
       firstColor: Color(0xFF5C0FF6),
       secondColor: Color(0xFF9813F8),
       thirdColor: Color(0xFFA651F6),
@@ -35,8 +36,10 @@ class ThemeProvider with ChangeNotifier {
       id: DEFAULT_THEME_LIGHT,
       backgroundColor: Color(0xFFFFFFFF),
       secondBackgroundColor: Color(0xFF666666),
+      thirdBackgroundColor: Color(0xFF39383E),
       firstColor: Color(0xFFD13447),
       secondColor: Color(0xFFF15142),
+      thirdColor: Color(0xFFA651F6),
       textColor: Color(0xFF464646),
       secondTextColor: Color(0xFF666666),
       isLight: true,
@@ -84,6 +87,9 @@ class ThemeProvider with ChangeNotifier {
 
   // Retrieve the second background color corresponding to the [_theme]
   Color get secondBackgroundColor => _theme.secondBackgroundColor;
+
+  // Retrieve the third background color corresponding to the [_theme]
+  Color get thirdBackgroundColor => _theme.thirdBackgroundColor;
 
   /// Retrieve the first color corresponding to the [_theme]
   Color get firstColor => _theme.firstColor;

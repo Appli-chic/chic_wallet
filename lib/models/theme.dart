@@ -4,6 +4,7 @@ class CWTheme {
   final int id;
   final Color backgroundColor;
   final Color secondBackgroundColor;
+  final Color thirdBackgroundColor;
   final Color firstColor;
   final Color secondColor;
   final Color thirdColor;
@@ -15,6 +16,7 @@ class CWTheme {
     @required this.id,
     @required this.backgroundColor,
     @required this.secondBackgroundColor,
+    @required this.thirdBackgroundColor,
     @required this.firstColor,
     @required this.secondColor,
     @required this.thirdColor,

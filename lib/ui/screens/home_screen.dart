@@ -1,5 +1,6 @@
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/ui/components/bank_card.dart';
+import 'package:chic_wallet/ui/components/transaction_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,6 +64,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       cardType: 'visa',
                       expirationDate: DateTime.now(),
                     ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 32),
+                child: Column(
+                  children: <Widget>[
+                    TransactionCard(),
                   ],
                 ),
               ),
