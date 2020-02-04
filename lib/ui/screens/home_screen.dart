@@ -27,15 +27,15 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       child: Container(
-        margin: EdgeInsets.only(top: kToolbarHeight - 20, left: 16, right: 16),
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                height: 30,
-                child: Row(
+        margin: EdgeInsets.only(top: kToolbarHeight - 30, left: 16, right: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
@@ -47,15 +47,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.add, color: _themeProvider.textColor),
+                      icon: Icon(Icons.add, color: _themeProvider.textColor, size: 30),
                       onPressed: () {},
                     ),
                   ],
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 16),
-                child: Row(
+                Row(
                   children: <Widget>[
                     BankCard(
                       bankName: "Banque populaire",
@@ -66,17 +63,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 32),
-                child: Column(
-                  children: <Widget>[
-                    TransactionCard(),
-                  ],
+              ],
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 40),
+              child: Text(
+                'Transactions',
+                style: TextStyle(
+                  color: _themeProvider.textColor,
+                  fontSize: 18,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -86,10 +85,28 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
-    return Column(
-      children: <Widget>[
-        _displaysTopPart(),
-      ],
+    return SingleChildScrollView(
+      child: Stack(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              _displaysTopPart(),
+            ],
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 450, left: 16, right: 16),
+            child: ListView.builder(
+              padding: EdgeInsets.only(top: 0, bottom: 20),
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: 10,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                return TransactionCard();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

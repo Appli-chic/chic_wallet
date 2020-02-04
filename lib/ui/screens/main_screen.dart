@@ -102,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
     return Scaffold(
-      backgroundColor: _themeProvider.backgroundColor,
+      backgroundColor: _themeProvider.secondBackgroundColor,
       bottomNavigationBar: _displayBottomBar(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: _displaysFloatingButton(),

@@ -16,6 +16,7 @@ class _TransactionCardState extends State<TransactionCard> {
 
     return Container(
       height: 60,
+      margin: EdgeInsets.only(bottom: 12),
       decoration: new BoxDecoration(
         color: _themeProvider.backgroundColor,
         borderRadius: new BorderRadius.all(const Radius.circular(8.0)),
@@ -43,8 +44,8 @@ class _TransactionCardState extends State<TransactionCard> {
                 padding: EdgeInsets.only(
                   left: 16,
                   right: 8,
-                  top: 8,
-                  bottom: 8,
+                  top: 6,
+                  bottom: 6,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +66,7 @@ class _TransactionCardState extends State<TransactionCard> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: _themeProvider.secondTextColor,
-                        fontSize: 12,
+                        fontSize: 14,
                       ),
                     ),
                   ],
@@ -74,8 +75,8 @@ class _TransactionCardState extends State<TransactionCard> {
             ),
             Container(
               padding: EdgeInsets.only(
-                top: 8,
-                bottom: 8,
+                top: 6,
+                bottom: 6,
                 right: 16,
               ),
               child: Column(
@@ -93,7 +94,7 @@ class _TransactionCardState extends State<TransactionCard> {
                     'Yesterday',
                     style: TextStyle(
                       color: _themeProvider.secondTextColor,
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ],
