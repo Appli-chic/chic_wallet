@@ -28,25 +28,25 @@ class ThemeProvider with ChangeNotifier {
       secondColor: Color(0xFF9813F8),
       thirdColor: Color(0xFFA651F6),
       textColor: Color(0xFFFFFFFF),
-      secondTextColor: Color(0xFF67676E),
+      secondTextColor: Color(0xFF78787E),
       isLight: false,
     );
 
-    CWTheme _defaultLightTheme = CWTheme(
-      id: DEFAULT_THEME_LIGHT,
-      backgroundColor: Color(0xFFFFFFFF),
-      secondBackgroundColor: Color(0xFF666666),
-      thirdBackgroundColor: Color(0xFF39383E),
-      firstColor: Color(0xFFD13447),
-      secondColor: Color(0xFFF15142),
-      thirdColor: Color(0xFFA651F6),
-      textColor: Color(0xFF464646),
-      secondTextColor: Color(0xFF666666),
-      isLight: true,
-    );
+//    CWTheme _defaultLightTheme = CWTheme(
+//      id: DEFAULT_THEME_LIGHT,
+//      backgroundColor: Color(0xFFFFFFFF),
+//      secondBackgroundColor: Color(0xFF666666),
+//      thirdBackgroundColor: Color(0xFF39383E),
+//      firstColor: Color(0xFFD13447),
+//      secondColor: Color(0xFFF15142),
+//      thirdColor: Color(0xFFA651F6),
+//      textColor: Color(0xFF464646),
+//      secondTextColor: Color(0xFF78787E),
+//      isLight: true,
+//    );
 
     _themeList.add(_defaultDarkTheme);
-    _themeList.add(_defaultLightTheme);
+//    _themeList.add(_defaultLightTheme);
   }
 
   /// Load the [_theme] stored in the secured storage

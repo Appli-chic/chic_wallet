@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 
 class AppBarImage extends StatefulWidget {
   final String imageUrl;
+  final double height;
 
   AppBarImage({
-    this.imageUrl,
+    @required this.imageUrl,
+    this.height = 300,
   });
 
   @override
@@ -23,7 +25,8 @@ class _AppBarImageState extends State<AppBarImage> {
     return Stack(
       children: <Widget>[
         Container(
-          height: 340,
+          height: widget.height,
+          width: double.maxFinite,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,

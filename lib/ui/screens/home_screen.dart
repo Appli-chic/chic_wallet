@@ -1,3 +1,4 @@
+import 'package:chic_wallet/models/db/card.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/ui/components/bank_card.dart';
 import 'package:chic_wallet/ui/components/transaction_card.dart';
@@ -47,19 +48,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.add, color: _themeProvider.textColor, size: 30),
-                      onPressed: () {},
+                      icon: Icon(Icons.add,
+                          color: _themeProvider.textColor, size: 30),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/add_bank_screen');
+                      },
                     ),
                   ],
                 ),
                 Row(
                   children: <Widget>[
                     BankCard(
-                      bankName: "Banque populaire",
-                      username: "Guillaume Belouin",
-                      money: 16000.49,
-                      cardType: 'visa',
-                      expirationDate: DateTime.now(),
+                      card: CWCard(
+                        id: 0,
+                        bankName: "Banque populaire",
+                        username: "Guillaume Belouin",
+                        money: 16000.49,
+                        cardType: 'visa',
+                        expirationDate: DateTime.now(),
+                      ),
                     ),
                   ],
                 ),
@@ -86,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
     return SingleChildScrollView(
+      physics: ClampingScrollPhysics(),
       child: Stack(
         children: <Widget>[
           Column(

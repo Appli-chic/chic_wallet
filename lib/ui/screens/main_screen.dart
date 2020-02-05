@@ -1,5 +1,6 @@
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'home_screen.dart';
@@ -99,6 +100,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
     return Scaffold(

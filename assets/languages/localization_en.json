@@ -12,5 +12,9 @@
   "sign_up_sign_up": "Sign up",
   "sign_up_confirm_password": "Confirm password",
   "sign_up_email_already_exists": "The user already exists.",
-  "sign_up_passwords_not_identical": "Passwords must be identical."
+  "sign_up_passwords_not_identical": "Passwords must be identical.",
+  "add_bank_title": "New bank card",
+  "add_bank_bank_name": "Bank name",
+  "add_bank_cardholder_name": "Cardholder name",
+  "add_bank_validity_date": "Validity date"
 }

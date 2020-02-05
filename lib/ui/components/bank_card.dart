@@ -1,21 +1,14 @@
+import 'package:chic_wallet/models/db/card.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class BankCard extends StatefulWidget {
-  final String bankName;
-  final String username;
-  final double money;
-  final String cardType;
-  final DateTime expirationDate;
+  final CWCard card;
 
   BankCard({
-    @required this.bankName,
-    @required this.username,
-    @required this.money,
-    @required this.cardType,
-    @required this.expirationDate,
+    @required this.card,
   });
 
   @override
@@ -26,7 +19,7 @@ class _BankCardState extends State<BankCard> {
   ThemeProvider _themeProvider;
 
   Widget _displaysCardType() {
-    if (widget.cardType == "visa") {
+    if (widget.card.cardType == "visa") {
       return Container(
         width: 50,
         height: 25,
@@ -50,10 +43,10 @@ class _BankCardState extends State<BankCard> {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
     final formatter = new NumberFormat("#,###.##");
-    String moneyString = "\$${formatter.format(widget.money)}";
+    String moneyString = "\$${formatter.format(widget.card.money)}";
 
-    var dateFormatter = new DateFormat('MM-yy');
-    String dateString = dateFormatter.format(widget.expirationDate);
+    var dateFormatter = new DateFormat('MM/yy');
+    String dateString = dateFormatter.format(widget.card.expirationDate);
 
     return Container(
       height: 130,
@@ -76,7 +69,7 @@ class _BankCardState extends State<BankCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      widget.bankName,
+                      widget.card.bankName,
                       style: TextStyle(
                         color: _themeProvider.textColor,
                         fontSize: 16,
@@ -86,7 +79,7 @@ class _BankCardState extends State<BankCard> {
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        widget.username,
+                        widget.card.username,
                         style: TextStyle(
                           color: _themeProvider.textColor,
                           fontSize: 14,

@@ -159,6 +159,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: LoadingDialog(
         isDisplayed: _isLoading,
         child: SingleChildScrollView(
+          physics: ClampingScrollPhysics(),
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: size.height,
