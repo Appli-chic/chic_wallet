@@ -50,9 +50,10 @@ class _BankCardState extends State<BankCard> {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
     final formatter = new NumberFormat("#,###.##");
-    String dateString =
-        "${widget.expirationDate.day} / ${widget.expirationDate.month}";
     String moneyString = "\$${formatter.format(widget.money)}";
+
+    var dateFormatter = new DateFormat('MM-yy');
+    String dateString = dateFormatter.format(widget.expirationDate);
 
     return Container(
       height: 130,
