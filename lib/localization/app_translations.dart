@@ -32,6 +32,18 @@ class AppTranslations {
     return _localisedValues[key] ?? key;
   }
 
+  List<String> list(String key) {
+    var result = List<String>();
+
+    if ((_localisedValues[key] as List<dynamic>).isNotEmpty) {
+      for (var element in _localisedValues[key]) {
+        result.add(element);
+      }
+    }
+
+    return result;
+  }
+
   String textWithArguments(String key, List<String> args) {
     return _localisedValues[key] ?? key;
   }

@@ -16,5 +16,8 @@
   "add_bank_title": "New bank card",
   "add_bank_bank_name": "Bank name",
   "add_bank_cardholder_name": "Cardholder name",
-  "add_bank_validity_date": "Validity date"
+  "add_bank_validity_date": "Validity date",
+  "add_bank_card_type": "Card type",
+  "add_bank_currency": "Currency",
+  "add_bank_save": "SAVE"
 }

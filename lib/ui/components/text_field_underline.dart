@@ -1,6 +1,9 @@
 import 'package:chic_wallet/providers/theme_provider.dart';
+import 'package:chic_wallet/utils/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class TextFieldType {
@@ -11,6 +14,8 @@ class TextFieldType {
   static const TextFieldType text = TextFieldType._(0);
 
   static const TextFieldType date = TextFieldType._(1);
+
+  static const TextFieldType select = TextFieldType._(2);
 }
 
 class TextFieldUnderline extends StatefulWidget {
@@ -21,15 +26,17 @@ class TextFieldUnderline extends StatefulWidget {
   final TextInputAction textInputAction;
   final Function(String) onSubmitted;
   final TextFieldType fieldType;
+  final List<String> listFields;
 
   TextFieldUnderline({
-    this.controller,
+    @required this.controller,
     @required this.hint,
     this.isObscure = false,
     this.focus,
     this.onSubmitted,
     this.textInputAction = TextInputAction.next,
     this.fieldType = TextFieldType.text,
+    this.listFields = const [],
   });
 
   @override
@@ -38,6 +45,68 @@ class TextFieldUnderline extends StatefulWidget {
 
 class _TextFieldUnderlineState extends State<TextFieldUnderline> {
   ThemeProvider _themeProvider;
+
+  _onSelectInputClicked() async {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200,
+          child: CupertinoPicker(
+            backgroundColor: _themeProvider.backgroundColor,
+            itemExtent: 30,
+            onSelectedItemChanged: (int index) {
+              widget.controller.text = widget.listFields[index];
+            },
+            children:
+                List<Widget>.generate(widget.listFields.length, (int index) {
+              return Center(
+                child: Text(
+                  widget.listFields[index],
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              );
+            }),
+          ),
+        );
+      },
+    );
+  }
+
+  _onDateInputClicked() async {
+    DateTime selectedDate = await showRoundedDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      borderRadius: 16,
+      initialDatePickerMode: DatePickerMode.year,
+      theme: ThemeData(
+        primaryColor: _themeProvider.secondColor,
+        accentColor: _themeProvider.secondColor,
+        dialogBackgroundColor: _themeProvider.backgroundColor,
+        textTheme: TextTheme(
+          body1: TextStyle(color: _themeProvider.textColor),
+          caption: TextStyle(color: _themeProvider.textColor),
+          subhead: TextStyle(color: _themeProvider.textColor),
+        ),
+        disabledColor: _themeProvider.secondTextColor,
+        accentTextTheme: TextTheme(
+          body2: TextStyle(color: _themeProvider.textColor),
+        ),
+        iconTheme: IconThemeData(color: _themeProvider.textColor),
+      ),
+    );
+
+    if (selectedDate != null) {
+      var dateFormatter = new DateFormat('MM/yy');
+      String dateString = dateFormatter.format(selectedDate);
+
+      widget.controller.text = dateString;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,32 +139,15 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
       ),
       style: TextStyle(color: _themeProvider.textColor, fontSize: 16),
       onSubmitted: widget.onSubmitted,
-      readOnly: widget.fieldType == TextFieldType.date ? true : false,
-      onTap: () async {
+      readOnly: widget.fieldType == TextFieldType.date ||
+              widget.fieldType == TextFieldType.select
+          ? true
+          : false,
+      onTap: () {
         if (widget.fieldType == TextFieldType.date) {
-          DateTime selectedDate = await showRoundedDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime.now(),
-            lastDate: DateTime(2100),
-            borderRadius: 16,
-            initialDatePickerMode: DatePickerMode.year,
-            theme: ThemeData(
-              primaryColor: _themeProvider.secondColor,
-              accentColor: _themeProvider.secondColor,
-              dialogBackgroundColor: _themeProvider.backgroundColor,
-              textTheme: TextTheme(
-                body1: TextStyle(color: _themeProvider.textColor),
-                caption: TextStyle(color: _themeProvider.textColor),
-                subhead: TextStyle(color: _themeProvider.textColor),
-              ),
-              disabledColor: _themeProvider.secondTextColor,
-              accentTextTheme: TextTheme(
-                body2: TextStyle(color: _themeProvider.textColor),
-              ),
-              iconTheme: IconThemeData(color: _themeProvider.textColor),
-            ),
-          );
+          _onDateInputClicked();
+        } else if (widget.fieldType == TextFieldType.select) {
+          _onSelectInputClicked();
         }
       },
     );

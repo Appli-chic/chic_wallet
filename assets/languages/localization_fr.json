@@ -16,5 +16,8 @@
   "add_bank_title": "Nouvelle carte bancaire",
   "add_bank_bank_name": "Nom de la banque",
   "add_bank_cardholder_name": "Nom du titulaire",
-  "add_bank_validity_date": "Date de validité"
+  "add_bank_validity_date": "Date de validité",
+  "add_bank_card_type": "Type de carte",
+  "add_bank_currency": "Devise",
+  "add_bank_save": "SAUVEGARDER"
 }
