@@ -1,5 +1,4 @@
 import 'package:chic_wallet/providers/theme_provider.dart';
-import 'package:chic_wallet/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
@@ -27,6 +26,7 @@ class TextFieldUnderline extends StatefulWidget {
   final Function(String) onSubmitted;
   final TextFieldType fieldType;
   final List<String> listFields;
+  final Function(DateTime) onDateSelected;
 
   TextFieldUnderline({
     @required this.controller,
@@ -37,6 +37,7 @@ class TextFieldUnderline extends StatefulWidget {
     this.textInputAction = TextInputAction.next,
     this.fieldType = TextFieldType.text,
     this.listFields = const [],
+    this.onDateSelected,
   });
 
   @override
@@ -101,10 +102,11 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
     );
 
     if (selectedDate != null) {
-      var dateFormatter = new DateFormat('MM/yy');
+      var dateFormatter = DateFormat('MM/yy');
       String dateString = dateFormatter.format(selectedDate);
 
       widget.controller.text = dateString;
+      widget.onDateSelected(selectedDate);
     }
   }
 

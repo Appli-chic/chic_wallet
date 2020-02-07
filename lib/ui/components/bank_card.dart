@@ -1,14 +1,15 @@
-import 'package:chic_wallet/models/db/card.dart';
+import 'package:chic_wallet/models/db/bank.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
+import 'package:chic_wallet/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class BankCard extends StatefulWidget {
-  final CWCard card;
+  final Bank bank;
 
   BankCard({
-    @required this.card,
+    @required this.bank,
   });
 
   @override
@@ -19,7 +20,7 @@ class _BankCardState extends State<BankCard> {
   ThemeProvider _themeProvider;
 
   Widget _displaysCardType() {
-    if (widget.card.cardType == "visa") {
+    if (widget.bank.cardType == "Visa") {
       return Container(
         width: 50,
         height: 25,
@@ -38,15 +39,21 @@ class _BankCardState extends State<BankCard> {
     return Container();
   }
 
+  String _displaysCurrency() {
+    var index = LIST_CURRENCIES_NAMES.indexOf(widget.bank.currency);
+    return LIST_CURRENCIES[index];
+  }
+
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
-    final formatter = new NumberFormat("#,###.##");
-    String moneyString = "\$${formatter.format(widget.card.money)}";
+    final formatter = NumberFormat("#,###.##");
+    String moneyString =
+        "${_displaysCurrency()}${formatter.format(widget.bank.money)}";
 
-    var dateFormatter = new DateFormat('MM/yy');
-    String dateString = dateFormatter.format(widget.card.expirationDate);
+    var dateFormatter = DateFormat('MM/yy');
+    String dateString = dateFormatter.format(widget.bank.expirationDate);
 
     return Container(
       height: 130,
@@ -69,7 +76,7 @@ class _BankCardState extends State<BankCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      widget.card.bankName,
+                      widget.bank.bankName,
                       style: TextStyle(
                         color: _themeProvider.textColor,
                         fontSize: 16,
@@ -79,7 +86,7 @@ class _BankCardState extends State<BankCard> {
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        widget.card.username,
+                        widget.bank.username,
                         style: TextStyle(
                           color: _themeProvider.textColor,
                           fontSize: 14,

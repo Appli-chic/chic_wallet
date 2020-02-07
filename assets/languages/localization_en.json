@@ -19,5 +19,8 @@
   "add_bank_validity_date": "Validity date",
   "add_bank_card_type": "Card type",
   "add_bank_currency": "Currency",
-  "add_bank_save": "SAVE"
+  "add_bank_save": "SAVE",
+  "add_bank_error_no_bank_name": "The bank name must not be empty.",
+  "add_bank_error_no_cardholder_name": "The cardholder name must not be empty.",
+  "add_bank_error_no_validity_date": "The validity date must not be empty."
 }

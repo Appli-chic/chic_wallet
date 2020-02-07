@@ -31,7 +31,7 @@ dependencies:
   validate: ^1.7.0
   intl: ^0.16.0
   flutter_rounded_date_picker: ^0.3.0
-
+  sqflite: ^1.2.0
 
 dev_dependencies:
   flutter_test:
