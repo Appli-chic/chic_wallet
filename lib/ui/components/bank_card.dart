@@ -39,18 +39,13 @@ class _BankCardState extends State<BankCard> {
     return Container();
   }
 
-  String _displaysCurrency() {
-    var index = LIST_CURRENCIES_NAMES.indexOf(widget.bank.currency);
-    return LIST_CURRENCIES[index];
-  }
-
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
     final formatter = NumberFormat("#,###.##");
     String moneyString =
-        "${_displaysCurrency()}${formatter.format(widget.bank.money)}";
+        "${displaysCurrency(widget.bank)}${formatter.format(widget.bank.money)}";
 
     var dateFormatter = DateFormat('MM/yy');
     String dateString = dateFormatter.format(widget.bank.expirationDate);

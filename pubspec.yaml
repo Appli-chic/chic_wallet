@@ -32,6 +32,7 @@ dependencies:
   intl: ^0.16.0
   flutter_rounded_date_picker: ^0.3.0
   sqflite: ^1.2.0
+  carousel_slider: ^1.4.1
 
 dev_dependencies:
   flutter_test:

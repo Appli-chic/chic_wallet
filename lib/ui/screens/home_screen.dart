@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chic_wallet/models/db/bank.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/bank_service.dart';
@@ -16,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   BankService _bankService;
 
   List<Bank> _banks = [];
+  int _carouselIndex = 0;
 
   @override
   void initState() {
@@ -75,19 +77,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                Container(
+                CarouselSlider(
                   height: 140,
-                  child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _banks.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 40, left: 16),
-                          child: BankCard(
-                            bank: _banks[index],
-                          ),
-                        );
-                      }),
+                  autoPlay: false,
+                  enlargeCenterPage: true,
+                  enableInfiniteScroll: false,
+                  items: _banks.map((bank) {
+                    return Builder(builder: (BuildContext context) {
+                      return BankCard(
+                        bank: bank,
+                      );
+                    });
+                  }).toList(),
+                  onPageChanged: (index) {
+                    setState(() {
+                      _carouselIndex = index;
+                    });
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: _banks.asMap().entries.map(
+                    (mapEntry) {
+                      return Container(
+                        width: 8.0,
+                        height: 8.0,
+                        margin: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 2.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _carouselIndex == mapEntry.key
+                              ? Colors.white
+                              : Color(0xFFBD7BFE),
+                        ),
+                      );
+                    },
+                  ).toList(),
                 ),
               ],
             ),
