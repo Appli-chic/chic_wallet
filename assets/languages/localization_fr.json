@@ -24,5 +24,6 @@
   "add_bank_error_no_cardholder_name": "Le nom du titulaire ne doit pas être vide.",
   "add_bank_error_no_validity_date": "La date de validité ne doit pas être vide.",
   "bank_body_banks": "Banques",
-  "home_screen_transactions": "Transactions"
+  "home_screen_transactions": "Transactions",
+  "add_bank": "AJOUTER"
 }

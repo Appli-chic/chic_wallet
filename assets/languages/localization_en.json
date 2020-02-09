@@ -24,5 +24,6 @@
   "add_bank_error_no_cardholder_name": "The cardholder name must not be empty.",
   "add_bank_error_no_validity_date": "The validity date must not be empty.",
   "bank_body_banks": "Banks",
-  "home_screen_transactions": "Transactions"
+  "home_screen_transactions": "Transactions",
+  "add_bank": "New bank"
 }

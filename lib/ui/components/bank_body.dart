@@ -43,6 +43,67 @@ class _BankBodyState extends State<BankBody> {
     setState(() {});
   }
 
+  Widget _displaysBankCards() {
+    if (_banks.isNotEmpty) {
+      return CarouselSlider(
+        height: 140,
+        autoPlay: false,
+        enlargeCenterPage: true,
+        enableInfiniteScroll: false,
+        items: _banks.map((bank) {
+          return Builder(builder: (BuildContext context) {
+            return BankCard(
+              bank: bank,
+            );
+          });
+        }).toList(),
+        onPageChanged: (index) {
+          setState(() {
+            _carouselIndex = index;
+          });
+        },
+      );
+    } else {
+      return Center(
+        child: GestureDetector(
+          onTap: () async {
+            await Navigator.pushNamed(context, '/add_bank_screen');
+            _loadAllBanks();
+          },
+          child: Container(
+            height: 140,
+            width: 280,
+            decoration: new BoxDecoration(
+              color: _themeProvider.backgroundColor,
+              borderRadius: new BorderRadius.all(const Radius.circular(8.0)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Icon(
+                    Icons.add,
+                    color: _themeProvider.textColor,
+                    size: 36,
+                  ),
+                ),
+                Text(
+                  AppTranslations.of(context).text("add_bank"),
+                  style: TextStyle(
+                    color: _themeProvider.textColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 36,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
   Widget _displaysTopPart() {
     return Container(
       height: 480,
@@ -90,24 +151,7 @@ class _BankBodyState extends State<BankBody> {
                     ),
                   ],
                 ),
-                CarouselSlider(
-                  height: 140,
-                  autoPlay: false,
-                  enlargeCenterPage: true,
-                  enableInfiniteScroll: false,
-                  items: _banks.map((bank) {
-                    return Builder(builder: (BuildContext context) {
-                      return BankCard(
-                        bank: bank,
-                      );
-                    });
-                  }).toList(),
-                  onPageChanged: (index) {
-                    setState(() {
-                      _carouselIndex = index;
-                    });
-                  },
-                ),
+                _displaysBankCards(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: _banks.asMap().entries.map(

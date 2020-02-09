@@ -51,7 +51,7 @@ class _BankCardState extends State<BankCard> {
     String dateString = dateFormatter.format(widget.bank.expirationDate);
 
     return Container(
-      height: 130,
+      height: 140,
       width: 280,
       decoration: new BoxDecoration(
         color: _themeProvider.backgroundColor,
