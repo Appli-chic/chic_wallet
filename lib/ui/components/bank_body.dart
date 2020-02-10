@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chic_wallet/localization/app_translations.dart';
-import 'package:chic_wallet/models/db/bank.dart';
+import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/bank_service.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +11,14 @@ import 'bank_card.dart';
 class BankBody extends StatefulWidget {
   final Widget child;
   final Widget label;
+  final bool isAppBarDisplayed;
+  final double height;
 
   BankBody({
     @required this.child,
     @required this.label,
+    this.isAppBarDisplayed = false,
+    this.height = 480,
   });
 
   @override
@@ -23,10 +27,8 @@ class BankBody extends StatefulWidget {
 
 class _BankBodyState extends State<BankBody> {
   ThemeProvider _themeProvider;
+  BankProvider _bankProvider;
   BankService _bankService;
-
-  List<Bank> _banks = [];
-  int _carouselIndex = 0;
 
   didChangeDependencies() {
     super.didChangeDependencies();
@@ -38,19 +40,18 @@ class _BankBodyState extends State<BankBody> {
   }
 
   _loadAllBanks() async {
-    _banks = await _bankService.getAll();
-
-    setState(() {});
+    var banks = await _bankService.getAll();
+    _bankProvider.setBanks(banks);
   }
 
   Widget _displaysBankCards() {
-    if (_banks.isNotEmpty) {
+    if (_bankProvider.banks.isNotEmpty) {
       return CarouselSlider(
         height: 140,
         autoPlay: false,
         enlargeCenterPage: true,
         enableInfiniteScroll: false,
-        items: _banks.map((bank) {
+        items: _bankProvider.banks.map((bank) {
           return Builder(builder: (BuildContext context) {
             return BankCard(
               bank: bank,
@@ -58,9 +59,7 @@ class _BankBodyState extends State<BankBody> {
           });
         }).toList(),
         onPageChanged: (index) {
-          setState(() {
-            _carouselIndex = index;
-          });
+          _bankProvider.selectBank(_bankProvider.selectedBank.id);
         },
       );
     } else {
@@ -105,8 +104,18 @@ class _BankBodyState extends State<BankBody> {
   }
 
   Widget _displaysTopPart() {
+    Widget appbar = Container();
+
+    if (widget.isAppBarDisplayed) {
+      appbar = Container(
+        child: BackButton(
+          color: _themeProvider.textColor,
+        ),
+      );
+    }
+
     return Container(
-      height: 480,
+      height: widget.height,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -127,6 +136,7 @@ class _BankBodyState extends State<BankBody> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                appbar,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -154,7 +164,7 @@ class _BankBodyState extends State<BankBody> {
                 _displaysBankCards(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: _banks.asMap().entries.map(
+                  children: _bankProvider.banks.asMap().entries.map(
                     (mapEntry) {
                       return Container(
                         width: 8.0,
@@ -163,7 +173,7 @@ class _BankBodyState extends State<BankBody> {
                             vertical: 10.0, horizontal: 2.0),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _carouselIndex == mapEntry.key
+                          color: _bankProvider.index == mapEntry.key
                               ? Colors.white
                               : Color(0xFFBD7BFE),
                         ),
@@ -183,6 +193,7 @@ class _BankBodyState extends State<BankBody> {
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+    _bankProvider = Provider.of<BankProvider>(context, listen: true);
 
     return SingleChildScrollView(
       physics: ClampingScrollPhysics(),

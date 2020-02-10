@@ -83,7 +83,9 @@ class _MainScreenState extends State<MainScreen> {
         child: FloatingActionButton(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          onPressed: () {},
+          onPressed: () async {
+            await Navigator.pushNamed(context, '/add_transaction_screen');
+          },
           child: Container(
             height: 70,
             width: 70,

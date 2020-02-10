@@ -26,5 +26,10 @@
   "bank_body_banks": "Banques",
   "home_screen_transactions": "Transactions",
   "home_screen_no_transactions": "Pas de transactions",
-  "add_bank": "AJOUTER"
+  "add_bank": "AJOUTER",
+  "add_transaction_title": "Titre",
+  "add_transaction_description": "Description",
+  "add_transaction_price": "Prix",
+  "add_transaction_type": "Catégorie",
+  "add_transaction_add": "Ajouter"
 }

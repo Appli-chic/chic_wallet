@@ -1,6 +1,8 @@
+import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/services/auth_service.dart';
 import 'package:chic_wallet/services/bank_service.dart';
 import 'package:chic_wallet/ui/screens/add_bank_screen.dart';
+import 'package:chic_wallet/ui/screens/add_transaction_screen.dart';
 import 'package:chic_wallet/ui/screens/login_screen.dart';
 import 'package:chic_wallet/ui/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
@@ -56,8 +58,11 @@ class _AppState extends State<App> {
         Provider<BankService>.value(
           value: BankService(env: _env),
         ),
-        ChangeNotifierProvider<ThemeProvider>.value(
-          value: ThemeProvider(),
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BankProvider(),
         ),
       ],
       child: MaterialApp(
@@ -80,6 +85,7 @@ class _AppState extends State<App> {
           '/login': (context) => LoginScreen(),
           '/signup': (context) => SignUpScreen(),
           '/add_bank_screen': (context) => AddBankScreen(),
+          '/add_transaction_screen': (context) => AddTransactionScreen(),
         },
       ),
     );

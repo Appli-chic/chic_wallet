@@ -1,6 +1,7 @@
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,8 @@ class TextFieldUnderline extends StatefulWidget {
   final TextFieldType fieldType;
   final List<String> listFields;
   final Function(DateTime) onDateSelected;
+  final TextInputType inputType;
+  final List<TextInputFormatter> inputFormatterList;
 
   TextFieldUnderline({
     @required this.controller,
@@ -38,6 +41,8 @@ class TextFieldUnderline extends StatefulWidget {
     this.fieldType = TextFieldType.text,
     this.listFields = const [],
     this.onDateSelected,
+    this.inputType = TextInputType.text,
+    this.inputFormatterList = const [],
   });
 
   @override
@@ -117,8 +122,9 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
     return TextField(
       focusNode: widget.focus,
       controller: widget.controller,
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: widget.inputType,
       textInputAction: widget.textInputAction,
+      inputFormatters: widget.inputFormatterList,
       obscureText: widget.isObscure,
       autocorrect: false,
       decoration: InputDecoration(

@@ -195,6 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: TextFieldUnderline(
                           controller: _emailController,
                           onSubmitted: _onEmailSubmitted,
+                          inputType: TextInputType.emailAddress,
                           hint: AppTranslations.of(context).text("login_email"),
                         ),
                       ),

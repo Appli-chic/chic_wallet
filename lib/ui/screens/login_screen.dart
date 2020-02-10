@@ -179,6 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.only(top: 16, bottom: 16),
                         child: TextFieldUnderline(
                           controller: _emailController,
+                          inputType: TextInputType.emailAddress,
                           hint: AppTranslations.of(context).text("login_email"),
                           onSubmitted: _onEmailSubmitted,
                         ),
