@@ -19,14 +19,14 @@ class BankService {
     var result = await getAllRows(Bank.tableName);
 
     return List.generate(result.length, (i) {
-      var expirationDate = DateTime.parse(result[i]['expirationDate']);
+      var expirationDate = DateTime.parse(result[i]['expiration_date']);
 
       return Bank(
         id: result[i]['id'],
-        bankName: result[i]['bankName'],
+        bankName: result[i]['bank_name'],
         username: result[i]['username'],
         money: result[i]['money'],
-        cardType: result[i]['cardType'],
+        cardType: result[i]['card_type'],
         expirationDate: expirationDate,
         currency: result[i]['currency'],
       );

@@ -1,8 +1,18 @@
+import 'package:chic_wallet/models/db/transaction.dart';
+import 'package:chic_wallet/models/db/type_transaction.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
+import 'package:chic_wallet/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class TransactionCard extends StatefulWidget {
+  final Transaction transaction;
+
+  TransactionCard({
+    this.transaction,
+  });
+
   @override
   _TransactionCardState createState() => _TransactionCardState();
 }
@@ -35,8 +45,10 @@ class _TransactionCardState extends State<TransactionCard> {
                 ),
               ),
               child: Center(
-                child:
-                    Icon(Icons.shopping_cart, color: _themeProvider.textColor),
+                child: Icon(
+                    TypeTransaction.getIconData(
+                        widget.transaction.typeTransaction.iconName),
+                    color: _themeProvider.textColor),
               ),
             ),
             Expanded(
@@ -52,7 +64,7 @@ class _TransactionCardState extends State<TransactionCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     Text(
-                      'Selling',
+                      widget.transaction.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -61,7 +73,7 @@ class _TransactionCardState extends State<TransactionCard> {
                       ),
                     ),
                     Text(
-                      'Selling my old graphic card',
+                      widget.transaction.description,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -84,14 +96,16 @@ class _TransactionCardState extends State<TransactionCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Text(
-                    '\$100',
+                    "${displaysCurrency(widget.transaction.bank)}${widget.transaction.price.abs()}",
                     style: TextStyle(
-                      color: Color(0xFF5EB863),
+                      color: widget.transaction.price >= 0
+                          ? Color(0xFF5EB863)
+                          : Color(0xFFe84646),
                       fontSize: 18,
                     ),
                   ),
                   Text(
-                    'Yesterday',
+                    timeago.format(widget.transaction.date),
                     style: TextStyle(
                       color: _themeProvider.secondTextColor,
                       fontSize: 14,

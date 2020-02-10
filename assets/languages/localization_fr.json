@@ -25,5 +25,6 @@
   "add_bank_error_no_validity_date": "La date de validité ne doit pas être vide.",
   "bank_body_banks": "Banques",
   "home_screen_transactions": "Transactions",
+  "home_screen_no_transactions": "Pas de transactions",
   "add_bank": "AJOUTER"
 }

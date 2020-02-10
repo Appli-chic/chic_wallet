@@ -51,11 +51,11 @@ class Bank {
 
     return {
       'id': this.id,
-      'bankName': this.bankName,
+      'bank_name': this.bankName,
       'username': this.username,
       'money': this.money,
-      'cardType': this.cardType,
-      'expirationDate': expirationDateString,
+      'card_type': this.cardType,
+      'expiration_date': expirationDateString,
       'currency': currency,
     };
   }

@@ -1,3 +1,6 @@
+import 'package:chic_wallet/models/db/bank.dart';
+import 'package:chic_wallet/models/db/transaction.dart' as t;
+import 'package:chic_wallet/models/db/type_transaction.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -9,7 +12,13 @@ Future<Database> openCWDatabase() async {
     version: 1,
     onCreate: (db, version) {
       return db.execute(
-        "CREATE TABLE banks(id INTEGER PRIMARY KEY, bankName TEXT, username TEXT, money REAL, cardType TEXT, expirationDate DATETIME, currency TEXT)",
+        // Create the structure of the database
+        "CREATE TABLE ${Bank.tableName}(id INTEGER PRIMARY KEY, bank_name TEXT, username TEXT, money REAL, card_type TEXT, expiration_date DATETIME, currency TEXT); "
+        "CREATE TABLE ${TypeTransaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, color TEXT, icon_name TEXT); "
+        "CREATE TABLE ${t.Transaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, description TEXT, price REAL, date DATETIME, bank_id INTEGER, type_transaction_id INTEGER, FOREIGN KEY(bank_id) REFERENCES ${Bank.tableName}(id), FOREIGN KEY(type_transaction_id) REFERENCES ${TypeTransaction.tableName}(id)); "
+
+        // Insert basic type transactions
+        "INSERT INTO ${TypeTransaction.tableName}(title, icon_name) VALUES('Selling', 'Cart'); ",
       );
     },
   );
