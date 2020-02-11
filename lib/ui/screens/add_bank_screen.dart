@@ -23,11 +23,13 @@ class _AddBankScreenState extends State<AddBankScreen> {
   DateTime _validityDate;
 
   final _cardholderNameFocus = FocusNode();
+  final _priceFocus = FocusNode();
   TextEditingController _bankNameController = TextEditingController();
   TextEditingController _cardholderNameController = TextEditingController();
   TextEditingController _validityDateController = TextEditingController();
   TextEditingController _cardTypeController = TextEditingController();
   TextEditingController _currencyController = TextEditingController();
+  TextEditingController _priceController = TextEditingController();
 
   bool _isLoading = false;
   List<String> _errorList = [];
@@ -35,6 +37,11 @@ class _AddBankScreenState extends State<AddBankScreen> {
   /// When the bank name is submitted we focus the card holder name field
   _onBankNameSubmitted(String text) {
     FocusScope.of(context).requestFocus(_cardholderNameFocus);
+  }
+
+  /// When the cardholder name is submitted we focus the price field
+  _onCardholderNameeSubmitted(String text) {
+    FocusScope.of(context).requestFocus(_priceFocus);
   }
 
   _onValidityDateSelected(DateTime date) {
@@ -66,6 +73,13 @@ class _AddBankScreenState extends State<AddBankScreen> {
             .text("add_bank_error_no_cardholder_name"));
       }
 
+      // Check the money is set
+      if (_priceController.text.isEmpty) {
+        isValid = false;
+        errorList.add(AppTranslations.of(context)
+            .text("add_bank_error_no_money"));
+      }
+
       // Check the validity date
       if (_validityDateController.text.isEmpty) {
         isValid = false;
@@ -83,7 +97,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
             Bank(
               bankName: _bankNameController.text,
               username: _cardholderNameController.text,
-              money: 0,
+              money: double.parse(_priceController.text),
               cardType: _cardTypeController.text,
               expirationDate: _validityDate,
               currency: _currencyController.text,
@@ -186,9 +200,21 @@ class _AddBankScreenState extends State<AddBankScreen> {
                         child: TextFieldUnderline(
                           controller: _cardholderNameController,
                           focus: _cardholderNameFocus,
-                          textInputAction: TextInputAction.done,
                           hint: AppTranslations.of(context)
                               .text("add_bank_cardholder_name"),
+                          onSubmitted: _onCardholderNameeSubmitted,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16, bottom: 16),
+                        child: TextFieldUnderline(
+                          controller: _priceController,
+                          focus: _priceFocus,
+                          inputType:
+                          TextInputType.numberWithOptions(decimal: true),
+                          textInputAction: TextInputAction.done,
+                          hint: AppTranslations.of(context)
+                              .text("add_bank_money"),
                         ),
                       ),
                       Padding(

@@ -30,10 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _transactionService =
           Provider.of<TransactionService>(context, listen: true);
     }
-
-    if (_bankProvider.needsToLoadTransactions) {
-      _loadTransactions();
-    }
   }
 
   _loadTransactions() async {
@@ -85,6 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+
+    if (_bankProvider != null && _bankProvider.needsToLoadTransactions) {
+      _loadTransactions();
+    }
 
     return BankBody(
       child: Container(
