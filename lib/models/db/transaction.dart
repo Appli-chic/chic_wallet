@@ -58,8 +58,8 @@ class Transaction {
       'description': this.description,
       'price': this.price,
       'date': dateString,
-      'type_transaction': this.typeTransaction,
-      'bank': this.bank,
+      'type_transaction_id': this.typeTransaction.id,
+      'bank_id': this.bank.id,
     };
   }
 }

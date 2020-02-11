@@ -1,6 +1,8 @@
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/services/auth_service.dart';
 import 'package:chic_wallet/services/bank_service.dart';
+import 'package:chic_wallet/services/transaction_service.dart';
+import 'package:chic_wallet/services/type_transaction_service.dart';
 import 'package:chic_wallet/ui/screens/add_bank_screen.dart';
 import 'package:chic_wallet/ui/screens/add_transaction_screen.dart';
 import 'package:chic_wallet/ui/screens/login_screen.dart';
@@ -57,6 +59,12 @@ class _AppState extends State<App> {
         ),
         Provider<BankService>.value(
           value: BankService(env: _env),
+        ),
+        Provider<TransactionService>.value(
+          value: TransactionService(env: _env),
+        ),
+        Provider<TypeTransactionService>.value(
+          value: TypeTransactionService(env: _env),
         ),
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(),

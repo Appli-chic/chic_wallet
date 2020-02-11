@@ -35,13 +35,20 @@ class _BankBodyState extends State<BankBody> {
 
     if (_bankService == null) {
       _bankService = Provider.of<BankService>(context);
-      _loadAllBanks();
+
+      _loadAllBanks().then((_) {
+        _bankProvider.askToReloadTransactions(true);
+      });
     }
   }
 
-  _loadAllBanks() async {
+  Future<void> _loadAllBanks() async {
     var banks = await _bankService.getAll();
     _bankProvider.setBanks(banks);
+
+    if (_bankProvider.selectedBank == null) {
+      _bankProvider.selectBank(banks[0].id);
+    }
   }
 
   Widget _displaysBankCards() {
@@ -60,6 +67,7 @@ class _BankBodyState extends State<BankBody> {
         }).toList(),
         onPageChanged: (index) {
           _bankProvider.selectBank(_bankProvider.selectedBank.id);
+          _bankProvider.askToReloadTransactions(true);
         },
       );
     } else {
@@ -67,7 +75,8 @@ class _BankBodyState extends State<BankBody> {
         child: GestureDetector(
           onTap: () async {
             await Navigator.pushNamed(context, '/add_bank_screen');
-            _loadAllBanks();
+            await _loadAllBanks();
+            _bankProvider.askToReloadTransactions(true);
           },
           child: Container(
             height: 140,
@@ -156,7 +165,8 @@ class _BankBodyState extends State<BankBody> {
                           color: _themeProvider.textColor, size: 30),
                       onPressed: () async {
                         await Navigator.pushNamed(context, '/add_bank_screen');
-                        _loadAllBanks();
+                        await _loadAllBanks();
+                        _bankProvider.askToReloadTransactions(true);
                       },
                     ),
                   ],

@@ -1,6 +1,8 @@
 import 'package:chic_wallet/localization/app_translations.dart';
 import 'package:chic_wallet/models/db/transaction.dart';
+import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
+import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/ui/components/bank_body.dart';
 import 'package:chic_wallet/ui/components/transaction_card.dart';
 import 'package:flutter/material.dart';
@@ -13,18 +15,43 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ThemeProvider _themeProvider;
-  List<Transaction> transactions = [];
+  List<Transaction> _transactions = [];
+  TransactionService _transactionService;
+  BankProvider _bankProvider;
+
+  didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_bankProvider == null) {
+      _bankProvider = Provider.of<BankProvider>(context, listen: true);
+    }
+
+    if (_transactionService == null) {
+      _transactionService =
+          Provider.of<TransactionService>(context, listen: true);
+    }
+
+    if (_bankProvider.needsToLoadTransactions) {
+      _loadTransactions();
+    }
+  }
+
+  _loadTransactions() async {
+    _bankProvider.askToReloadTransactions(false);
+    _transactions = await _transactionService.getAll();
+    setState(() {});
+  }
 
   Widget _displaysTransactions() {
-    if (transactions.isNotEmpty) {
+    if (_transactions.isNotEmpty) {
       return ListView.builder(
         padding: EdgeInsets.only(top: 0, bottom: 20),
         physics: NeverScrollableScrollPhysics(),
-        itemCount: transactions.length,
+        itemCount: _transactions.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
           return TransactionCard(
-            transaction: transactions[index],
+            transaction: _transactions[index],
           );
         },
       );

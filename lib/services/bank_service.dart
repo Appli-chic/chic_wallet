@@ -11,7 +11,7 @@ class BankService {
     this.env,
   });
 
-  Future<void> createBank(Bank bank) async {
+  Future<void> save(Bank bank) async {
     await addRow(Bank.tableName, bank.toMap());
   }
 

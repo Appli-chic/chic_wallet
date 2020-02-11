@@ -10,15 +10,20 @@ Future<Database> openCWDatabase() async {
   return openDatabase(
     join(await getDatabasesPath(), DATABASE_NAME),
     version: 1,
-    onCreate: (db, version) {
-      return db.execute(
-        // Create the structure of the database
-        "CREATE TABLE ${Bank.tableName}(id INTEGER PRIMARY KEY, bank_name TEXT, username TEXT, money REAL, card_type TEXT, expiration_date DATETIME, currency TEXT); "
-        "CREATE TABLE ${TypeTransaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, color TEXT, icon_name TEXT); "
-        "CREATE TABLE ${t.Transaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, description TEXT, price REAL, date DATETIME, bank_id INTEGER, type_transaction_id INTEGER, FOREIGN KEY(bank_id) REFERENCES ${Bank.tableName}(id), FOREIGN KEY(type_transaction_id) REFERENCES ${TypeTransaction.tableName}(id)); "
+    onCreate: (db, version) async {
+      // Create the structure of the database
+      await db.execute(
+          "CREATE TABLE ${Bank.tableName}(id INTEGER PRIMARY KEY, bank_name TEXT, username TEXT, money REAL, card_type TEXT, expiration_date DATETIME, currency TEXT) ");
 
-        // Insert basic type transactions
-        "INSERT INTO ${TypeTransaction.tableName}(title, icon_name) VALUES('Selling', 'Cart'); ",
+      await db.execute(
+          "CREATE TABLE ${TypeTransaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, color TEXT, icon_name TEXT) ");
+
+      await db.execute(
+          "CREATE TABLE ${t.Transaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, description TEXT, price REAL, date DATETIME, bank_id INTEGER, type_transaction_id INTEGER, FOREIGN KEY(bank_id) REFERENCES ${Bank.tableName}(id), FOREIGN KEY(type_transaction_id) REFERENCES ${TypeTransaction.tableName}(id)) ");
+
+      // Insert basic type transactions
+      await db.execute(
+        "INSERT INTO ${TypeTransaction.tableName}(title, icon_name) VALUES('Selling', 'Cart') ",
       );
     },
   );
@@ -37,6 +42,16 @@ Future<void> addRow(String tableName, Map<String, dynamic> row) async {
   );
 
   await db.close();
+}
+
+Future<List<dynamic>> sqlQuery(String query) async {
+  final Database db = await openCWDatabase();
+
+  var result = await db.rawQuery(query);
+
+  await db.close();
+
+  return result;
 }
 
 Future<List<dynamic>> getAllRows(String tableName) async {

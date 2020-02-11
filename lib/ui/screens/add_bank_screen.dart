@@ -43,7 +43,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
     });
   }
 
-  _save() {
+  _save() async {
     if (!_isLoading) {
       setState(() {
         _isLoading = true;
@@ -79,7 +79,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
         });
 
         try {
-          _bankService.createBank(
+          await _bankService.save(
             Bank(
               bankName: _bankNameController.text,
               username: _cardholderNameController.text,
@@ -225,8 +225,8 @@ class _AddBankScreenState extends State<AddBankScreen> {
                     ],
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, bottom: 16, top: 16),
                     child: RoundedButton(
                       onClick: _save,
                       text: AppTranslations.of(context)
