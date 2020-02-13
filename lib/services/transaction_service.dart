@@ -17,7 +17,7 @@ class TransactionService {
     await addRow(Transaction.tableName, transaction.toMap());
   }
 
-  Future<List<Transaction>> getAll() async {
+  Future<List<Transaction>> getAllByBankId(int bankId) async {
     var result = await sqlQuery(
         "SELECT ${Transaction.tableName}.id, ${Transaction.tableName}.title, ${Transaction.tableName}.description, "
         "${Transaction.tableName}.price, ${Transaction.tableName}.price, ${Transaction.tableName}.date, "
@@ -25,7 +25,8 @@ class TransactionService {
         "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency "
         "FROM ${Transaction.tableName} "
         "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = ${Transaction.tableName}.type_transaction_id "
-        "left join ${Bank.tableName} ON ${Bank.tableName}.id = ${Transaction.tableName}.bank_id ");
+        "left join ${Bank.tableName} ON ${Bank.tableName}.id = ${Transaction.tableName}.bank_id "
+        "where ${Bank.tableName}.id = $bankId ");
 
     return List.generate(result.length, (i) {
       var date = DateTime.parse(result[i]['date']);

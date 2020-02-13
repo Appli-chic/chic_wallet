@@ -39,7 +39,6 @@ class BankProvider with ChangeNotifier {
 
   askToReloadTransactions(bool hasToReload) {
     _needsToLoadTransactions = hasToReload;
-    notifyListeners();
   }
 
   List<Bank> get banks => _banks;

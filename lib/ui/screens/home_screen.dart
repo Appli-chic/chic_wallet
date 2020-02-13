@@ -15,7 +15,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ThemeProvider _themeProvider;
-  List<Transaction> _transactions = [];
   TransactionService _transactionService;
   BankProvider _bankProvider;
 
@@ -34,20 +33,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _loadTransactions() async {
     _bankProvider.askToReloadTransactions(false);
-    _transactions = await _transactionService.getAll();
-    setState(() {});
+
+    if (_bankProvider.selectedBank != null) {
+      _bankProvider.setTransactions(await _transactionService
+          .getAllByBankId(_bankProvider.selectedBank.id));
+    }
   }
 
   Widget _displaysTransactions() {
-    if (_transactions.isNotEmpty) {
+    if (_bankProvider.transactions.isNotEmpty) {
       return ListView.builder(
         padding: EdgeInsets.only(top: 0, bottom: 20),
         physics: NeverScrollableScrollPhysics(),
-        itemCount: _transactions.length,
+        itemCount: _bankProvider.transactions.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
           return TransactionCard(
-            transaction: _transactions[index],
+            transaction: _bankProvider.transactions[index],
           );
         },
       );
