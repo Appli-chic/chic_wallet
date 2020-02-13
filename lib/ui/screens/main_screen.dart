@@ -1,6 +1,8 @@
 import 'package:chic_wallet/providers/theme_provider.dart';
+import 'package:chic_wallet/ui/screens/chart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 import 'package:provider/provider.dart';
 
 import 'home_screen.dart';
@@ -13,7 +15,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   ThemeProvider _themeProvider;
 
-  PageController _pageController = PageController();
+  PreloadPageController _pageController = PreloadPageController();
   int _index = 0;
 
   @override
@@ -110,12 +112,12 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: _displayBottomBar(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: _displaysFloatingButton(),
-      body: PageView(
+      body: PreloadPageView(
         controller: _pageController,
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
           HomeScreen(),
-          Container(color: Colors.green),
+          ChartScreen(),
           Container(),
           Container(color: Colors.yellow),
           Container(color: Colors.blue),

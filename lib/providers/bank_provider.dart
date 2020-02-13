@@ -8,7 +8,7 @@ class BankProvider with ChangeNotifier {
   Bank _selectedBank;
   int _index = 0;
 
-  bool _needsToLoadTransactions = false;
+  bool _needsToLoadData = false;
 
   setBanks(List<Bank> banks) {
     _banks = banks;
@@ -37,8 +37,8 @@ class BankProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  askToReloadTransactions(bool hasToReload) {
-    _needsToLoadTransactions = hasToReload;
+  askToReloadData(bool hasToReload) {
+    _needsToLoadData = hasToReload;
   }
 
   List<Bank> get banks => _banks;
@@ -49,5 +49,5 @@ class BankProvider with ChangeNotifier {
 
   int get index => _index;
 
-  bool get needsToLoadTransactions => _needsToLoadTransactions;
+  bool get needsToLoadData => _needsToLoadData;
 }

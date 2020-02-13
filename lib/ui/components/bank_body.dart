@@ -33,12 +33,12 @@ class _BankBodyState extends State<BankBody> {
   didChangeDependencies() {
     super.didChangeDependencies();
 
+    if (_bankProvider == null) {
+      _bankProvider = Provider.of<BankProvider>(context, listen: true);
+    }
+
     if (_bankService == null) {
       _bankService = Provider.of<BankService>(context);
-
-      _loadAllBanks().then((_) {
-        _bankProvider.askToReloadTransactions(true);
-      });
     }
   }
 
@@ -67,7 +67,7 @@ class _BankBodyState extends State<BankBody> {
         }).toList(),
         onPageChanged: (index) {
           _bankProvider.selectBank(_bankProvider.banks[index].id);
-          _bankProvider.askToReloadTransactions(true);
+          _bankProvider.askToReloadData(true);
         },
       );
     } else {
@@ -76,7 +76,7 @@ class _BankBodyState extends State<BankBody> {
           onTap: () async {
             await Navigator.pushNamed(context, '/add_bank_screen');
             await _loadAllBanks();
-            _bankProvider.askToReloadTransactions(true);
+            _bankProvider.askToReloadData(true);
           },
           child: Container(
             height: 140,
@@ -166,7 +166,7 @@ class _BankBodyState extends State<BankBody> {
                       onPressed: () async {
                         await Navigator.pushNamed(context, '/add_bank_screen');
                         await _loadAllBanks();
-                        _bankProvider.askToReloadTransactions(true);
+                        _bankProvider.askToReloadData(true);
                       },
                     ),
                   ],
@@ -203,7 +203,6 @@ class _BankBodyState extends State<BankBody> {
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
-    _bankProvider = Provider.of<BankProvider>(context, listen: true);
 
     return SingleChildScrollView(
       physics: ClampingScrollPhysics(),

@@ -1,5 +1,4 @@
 import 'package:chic_wallet/localization/app_translations.dart';
-import 'package:chic_wallet/models/db/transaction.dart';
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/transaction_service.dart';
@@ -13,7 +12,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin<HomeScreen> {
   ThemeProvider _themeProvider;
   TransactionService _transactionService;
   BankProvider _bankProvider;
@@ -32,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _loadTransactions() async {
-    _bankProvider.askToReloadTransactions(false);
+    _bankProvider.askToReloadData(false);
 
     if (_bankProvider.selectedBank != null) {
       _bankProvider.setTransactions(await _transactionService
@@ -84,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
-    if (_bankProvider != null && _bankProvider.needsToLoadTransactions) {
+    if (_bankProvider != null && _bankProvider.needsToLoadData) {
       _loadTransactions();
     }
 
@@ -105,4 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
