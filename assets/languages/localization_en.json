@@ -37,5 +37,7 @@
   "add_transaction_empty_title": "The title must not be empty.",
   "add_transaction_empty_description": "The description must not be empty.",
   "add_transaction_empty_price": "The price must not be empty.",
-  "add_transaction_empty_bank": "A bank must be set."
+  "add_transaction_empty_bank": "A bank must be set.",
+  "add_transaction_add_category": "+ Add a category",
+  "manage_category_title": "Categories"
 }

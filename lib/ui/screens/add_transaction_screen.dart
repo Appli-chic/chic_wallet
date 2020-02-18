@@ -215,6 +215,25 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               .text("add_transaction_type"),
                         ),
                       ),
+                      GestureDetector(
+                        onTap: () async {
+                          await Navigator.pushReplacementNamed(context, '/manage_category_screen');
+                          _loadAllTypeTransactions();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8, bottom: 16, left: 16, right: 16),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              AppTranslations.of(context)
+                                  .text("add_transaction_add_category"),
+                              style: TextStyle(
+                                color: _themeProvider.textColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                       _displayError(),
                     ],
                   ),

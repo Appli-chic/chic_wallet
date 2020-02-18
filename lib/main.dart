@@ -6,6 +6,7 @@ import 'package:chic_wallet/services/type_transaction_service.dart';
 import 'package:chic_wallet/ui/screens/add_bank_screen.dart';
 import 'package:chic_wallet/ui/screens/add_transaction_screen.dart';
 import 'package:chic_wallet/ui/screens/login_screen.dart';
+import 'package:chic_wallet/ui/screens/manage_category_screen.dart';
 import 'package:chic_wallet/ui/screens/signup_screen.dart';
 import 'package:chic_wallet/ui/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +97,7 @@ class _AppState extends State<App> {
           '/signup': (context) => SignUpScreen(),
           '/add_bank_screen': (context) => AddBankScreen(),
           '/add_transaction_screen': (context) => AddTransactionScreen(),
+          '/manage_category_screen': (context) => ManageCategoryScreen(),
         },
       ),
     );
