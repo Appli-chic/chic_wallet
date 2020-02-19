@@ -217,7 +217,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          await Navigator.pushReplacementNamed(context, '/manage_category_screen');
+                          await Navigator.pushNamed(context, '/manage_category_screen');
                           _loadAllTypeTransactions();
                         },
                         child: Padding(

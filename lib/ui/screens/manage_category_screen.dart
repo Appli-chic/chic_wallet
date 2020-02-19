@@ -44,7 +44,10 @@ class _ManageCategoryScreenState extends State<ManageCategoryScreen> {
         title: Text(AppTranslations.of(context).text("manage_category_title")),
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              await Navigator.pushNamed(context, '/add_category');
+              _loadAllTypeTransactions();
+            },
             icon: Icon(
               Icons.add,
               color: _themeProvider.textColor,
@@ -64,13 +67,28 @@ class _ManageCategoryScreenState extends State<ManageCategoryScreen> {
                   color: _themeProvider.textColor,
                 ),
               ),
-              trailing: Icon(
-                Icons.edit,
-                color: _themeProvider.textColor,
+              trailing: Container(
+                width: 100,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Icon(
+                      Icons.edit,
+                      color: _themeProvider.textColor,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 24, right: 8),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ),
+                    )
+                  ],
+                ),
               ),
               leading: Container(
                 padding: EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 12),
-                color: Colors.purple,
+                color: TypeTransaction.getColor(_typeTransactionsList[index].color),
                 child: Icon(
                   TypeTransaction.getIconData(
                       _typeTransactionsList[index].iconName),

@@ -1,4 +1,5 @@
 import 'package:chic_wallet/localization/app_translations.dart';
+import 'package:chic_wallet/models/db/type_transaction.dart';
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -24,10 +25,12 @@ class _CircleChartState extends State<CircleChart> {
           .toList();
 
       if (transactionTypeData.isEmpty) {
+        var color = TypeTransaction.getColor(transaction.typeTransaction.color);
+
         data.add(LinearTransactions(
           transaction.typeTransaction.id,
           transaction.price,
-          charts.Color.fromHex(code: "#fe3523"),
+          charts.Color(r: color.red, g: color.green, b: color.blue, a: color.alpha),
         ));
       } else {
         transactionTypeData[0].price += transaction.price;

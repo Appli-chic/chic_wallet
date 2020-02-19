@@ -54,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
     var banks = await _bankService.getAll();
     _bankProvider.setBanks(banks);
 
-    if (_bankProvider.selectedBank == null) {
+    if (_bankProvider.selectedBank == null && banks.isNotEmpty) {
       _bankProvider.selectBank(banks[0].id);
     }
   }

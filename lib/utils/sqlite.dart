@@ -23,7 +23,7 @@ Future<Database> openCWDatabase() async {
 
       // Insert basic type transactions
       await db.execute(
-        "INSERT INTO ${TypeTransaction.tableName}(title, icon_name) VALUES('Selling', 'Cart') ",
+        "INSERT INTO ${TypeTransaction.tableName}(title, color, icon_name) VALUES('Shopping', '255,244,67,54', '59596,MaterialIcons,false') ",
       );
     },
   );

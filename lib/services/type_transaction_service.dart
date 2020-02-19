@@ -11,6 +11,10 @@ class TypeTransactionService {
     this.env,
   });
 
+  Future<void> save(TypeTransaction typeTransaction) async {
+    await addRow(TypeTransaction.tableName, typeTransaction.toMap());
+  }
+
   Future<List<TypeTransaction>> getAll() async {
     var result = await getAllRows(TypeTransaction.tableName);
 
