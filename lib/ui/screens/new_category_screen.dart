@@ -162,7 +162,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                 Column(
                   children: <Widget>[
                     AppBarImage(
-                      imageUrl: 'assets/dollars.jpg',
+                      imageUrl: 'assets/category.jpg',
                       height: 240,
                     ),
                     Padding(
