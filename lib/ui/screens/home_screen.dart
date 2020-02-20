@@ -17,19 +17,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   TransactionService _transactionService;
   BankProvider _bankProvider;
 
-  didChangeDependencies() {
-    super.didChangeDependencies();
-
-    if (_bankProvider == null) {
-      _bankProvider = Provider.of<BankProvider>(context, listen: true);
-    }
-
-    if (_transactionService == null) {
-      _transactionService =
-          Provider.of<TransactionService>(context, listen: true);
-    }
-  }
-
   _loadTransactions() async {
     _bankProvider.askToReloadData(false);
 
@@ -82,6 +69,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+    _transactionService =
+        Provider.of<TransactionService>(context, listen: true);
+    _bankProvider = Provider.of<BankProvider>(context, listen: true);
 
     if (_bankProvider != null && _bankProvider.needsToLoadData) {
       _loadTransactions();

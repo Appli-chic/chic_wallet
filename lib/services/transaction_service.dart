@@ -26,7 +26,8 @@ class TransactionService {
         "FROM ${Transaction.tableName} "
         "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = ${Transaction.tableName}.type_transaction_id "
         "left join ${Bank.tableName} ON ${Bank.tableName}.id = ${Transaction.tableName}.bank_id "
-        "where ${Bank.tableName}.id = $bankId ");
+        "where ${Bank.tableName}.id = $bankId "
+        "order by ${Transaction.tableName}.date desc ");
 
     return List.generate(result.length, (i) {
       var date = DateTime.parse(result[i]['date']);

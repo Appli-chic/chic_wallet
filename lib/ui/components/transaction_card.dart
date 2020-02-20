@@ -27,7 +27,7 @@ class _TransactionCardState extends State<TransactionCard> {
     return Container(
       height: 60,
       margin: EdgeInsets.only(bottom: 12),
-      decoration: new BoxDecoration(
+      decoration: BoxDecoration(
         color: _themeProvider.backgroundColor,
         borderRadius: new BorderRadius.all(const Radius.circular(8.0)),
       ),
@@ -37,18 +37,37 @@ class _TransactionCardState extends State<TransactionCard> {
             Container(
               height: 60,
               width: 60,
-              decoration: new BoxDecoration(
+              decoration: BoxDecoration(
                 color: _themeProvider.thirdBackgroundColor,
-                borderRadius: new BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(8.0),
                   bottomLeft: const Radius.circular(8.0),
                 ),
               ),
-              child: Center(
-                child: Icon(
-                    TypeTransaction.getIconData(
-                        widget.transaction.typeTransaction.iconName),
-                    color: _themeProvider.textColor),
+              child: Container(
+                child: Stack(
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.center,
+                      child: Icon(
+                          TypeTransaction.getIconData(
+                              widget.transaction.typeTransaction.iconName),
+                          color: _themeProvider.textColor),
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Container(
+                        margin: EdgeInsets.only(top: 10, right: 10),
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: TypeTransaction.getColor(widget.transaction.typeTransaction.color),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Expanded(

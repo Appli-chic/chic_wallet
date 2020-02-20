@@ -9,6 +9,7 @@ import 'package:chic_wallet/ui/components/bank_body.dart';
 import 'package:chic_wallet/ui/components/error_form.dart';
 import 'package:chic_wallet/ui/components/rounded_button.dart';
 import 'package:chic_wallet/ui/components/text_field_underline.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +36,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
   TextEditingController _categoryController = TextEditingController();
+  int _paymentType = 0;
 
   didChangeDependencies() {
     super.didChangeDependencies();
@@ -80,15 +82,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           .add(AppTranslations.of(context).text("add_transaction_empty_title"));
     }
 
-    // Check the description
-    if (_descriptionController.text.isEmpty) {
-      isValid = false;
-      errorList.add(AppTranslations.of(context)
-          .text("add_transaction_empty_description"));
-    }
-
     // Check the price
-    if (_descriptionController.text.isEmpty) {
+    if (_priceController.text.isEmpty) {
       isValid = false;
       errorList
           .add(AppTranslations.of(context).text("add_transaction_empty_price"));
@@ -111,7 +106,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         Transaction(
           title: _titleController.text,
           description: _descriptionController.text,
-          price: double.parse(_priceController.text),
+          price: _paymentType == 0 ? -double.parse(_priceController.text) : double.parse(_priceController.text),
           date: DateTime.now(),
           typeTransaction: _typeTransactionsList[typeTransactionIndex],
           bank: _bankProvider.selectedBank,
@@ -175,6 +170,44 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   Column(
                     children: <Widget>[
                       Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Center(
+                          child: Text(
+                            AppTranslations.of(context)
+                                .text("add_transaction_screen_title"),
+                            style: TextStyle(
+                              color: _themeProvider.textColor,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8, bottom: 8),
+                        child: CupertinoSlidingSegmentedControl(
+                          groupValue: _paymentType,
+                          backgroundColor: _themeProvider.thirdBackgroundColor,
+                          thumbColor: _themeProvider.firstColor,
+                          onValueChanged: (value) {
+                            setState(() {
+                              _paymentType = value;
+                            });
+                          },
+                          children: {
+                            0: Text(
+                              AppTranslations.of(context)
+                                  .text("add_transaction_payment"),
+                              style: TextStyle(color: _themeProvider.textColor),
+                            ),
+                            1: Text(
+                              AppTranslations.of(context)
+                                  .text("add_transaction_receiving"),
+                              style: TextStyle(color: _themeProvider.textColor),
+                            ),
+                          },
+                        ),
+                      ),
+                      Padding(
                         padding: const EdgeInsets.only(top: 8, bottom: 16),
                         child: TextFieldUnderline(
                           controller: _titleController,
@@ -217,11 +250,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          await Navigator.pushNamed(context, '/manage_category_screen');
+                          await Navigator.pushNamed(
+                              context, '/manage_category_screen');
                           _loadAllTypeTransactions();
                         },
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 16, left: 16, right: 16),
+                          padding: const EdgeInsets.only(
+                              top: 8, bottom: 16, left: 16, right: 16),
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
