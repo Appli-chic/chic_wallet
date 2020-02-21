@@ -1,12 +1,16 @@
 import 'package:chic_wallet/localization/app_translations.dart';
-import 'package:chic_wallet/models/db/type_transaction.dart';
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:provider/provider.dart';
+import 'package:chic_wallet/ui/screens/chart_screen.dart';
 
 class CircleChart extends StatefulWidget {
+  final List<TransactionTypeGroupData> transactionsGroup;
+
+  CircleChart({this.transactionsGroup});
+
   @override
   _CircleChartState createState() => _CircleChartState();
 }
@@ -19,22 +23,17 @@ class _CircleChartState extends State<CircleChart> {
   _loadChartsData() {
     List<LinearTransactions> data = [];
 
-    for (var transaction in _bankProvider.transactions) {
-      var transactionTypeData = data
-          .where((d) => d.category == transaction.typeTransaction.id)
-          .toList();
+    for (var transaction in widget.transactionsGroup) {
+      var color = transaction.color;
 
-      if (transactionTypeData.isEmpty) {
-        var color = TypeTransaction.getColor(transaction.typeTransaction.color);
-
-        data.add(LinearTransactions(
-          transaction.typeTransaction.id,
-          transaction.price,
-          charts.Color(r: color.red, g: color.green, b: color.blue, a: color.alpha),
-        ));
-      } else {
-        transactionTypeData[0].price += transaction.price;
-      }
+      data.add(
+        LinearTransactions(
+          transaction.idType,
+          transaction.amount,
+          charts.Color(
+              r: color.red, g: color.green, b: color.blue, a: color.alpha),
+        ),
+      );
     }
 
     var series = charts.Series<LinearTransactions, int>(
