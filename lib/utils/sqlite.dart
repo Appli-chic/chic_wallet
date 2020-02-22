@@ -44,6 +44,18 @@ Future<void> addRow(String tableName, Map<String, dynamic> row) async {
   await db.close();
 }
 
+Future<void> updateRow(String tableName, Map<String, dynamic> row) async {
+  final Database db = await openCWDatabase();
+
+  await db.update(
+    tableName,
+    row,
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+
+  await db.close();
+}
+
 Future<List<dynamic>> sqlQuery(String query) async {
   final Database db = await openCWDatabase();
 

@@ -3,6 +3,7 @@ import 'package:chic_wallet/models/db/transaction.dart';
 import 'package:chic_wallet/models/db/type_transaction.dart';
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
+import 'package:chic_wallet/services/bank_service.dart';
 import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/services/type_transaction_service.dart';
 import 'package:chic_wallet/ui/components/bank_body.dart';
@@ -24,6 +25,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   BankProvider _bankProvider;
   TypeTransactionService _typeTransactionService;
   TransactionService _transactionService;
+  BankService _bankService;
 
   List<String> _typeTransactionsTextList = [];
   List<TypeTransaction> _typeTransactionsList = [];
@@ -113,6 +115,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         ),
       );
 
+      var newBank = _bankProvider.selectedBank;
+      newBank.money +=  _paymentType == 0 ? -double.parse(_priceController.text) : double.parse(_priceController.text);
+      await _bankService.update(newBank);
+
       Navigator.pop(context);
     }
 
@@ -144,6 +150,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     _bankProvider = Provider.of<BankProvider>(context, listen: true);
     _transactionService =
         Provider.of<TransactionService>(context, listen: true);
+    _bankService =
+        Provider.of<BankService>(context, listen: true);
 
     final size = MediaQuery.of(context).size;
 

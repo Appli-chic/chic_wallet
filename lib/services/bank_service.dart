@@ -15,6 +15,10 @@ class BankService {
     await addRow(Bank.tableName, bank.toMap());
   }
 
+  Future<void> update(Bank bank) async {
+    await updateRow(Bank.tableName, bank.toMap());
+  }
+
   Future<List<Bank>> getAll() async {
     var result = await getAllRows(Bank.tableName);
 
