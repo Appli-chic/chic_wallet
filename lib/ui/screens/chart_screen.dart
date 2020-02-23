@@ -62,7 +62,7 @@ class _ChartScreenState extends State<ChartScreen>
           ),
         );
       } else {
-        _transactionsGroup[0].amount += transaction.price;
+        transactionTypeData[0].amount += transaction.price;
       }
     }
   }
