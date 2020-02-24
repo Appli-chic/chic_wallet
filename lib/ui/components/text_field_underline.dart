@@ -127,6 +127,9 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
       inputFormatters: widget.inputFormatterList,
       obscureText: widget.isObscure,
       autocorrect: false,
+      textCapitalization: widget.isObscure
+          ? TextCapitalization.none
+          : TextCapitalization.sentences,
       decoration: InputDecoration(
         labelText: widget.hint,
         labelStyle: TextStyle(color: _themeProvider.secondTextColor),

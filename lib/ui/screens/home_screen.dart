@@ -18,8 +18,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   BankProvider _bankProvider;
 
   _loadTransactions() async {
-    _bankProvider.askToReloadData(false);
-
     if (_bankProvider.selectedBank != null) {
       _bankProvider.setTransactions(await _transactionService
           .getAllByBankId(_bankProvider.selectedBank.id));

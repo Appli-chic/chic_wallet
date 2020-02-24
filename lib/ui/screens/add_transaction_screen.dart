@@ -115,6 +115,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         ),
       );
 
+      _bankProvider.askToReloadData(true);
       var newBank = _bankProvider.selectedBank;
       newBank.money +=  _paymentType == 0 ? -double.parse(_priceController.text) : double.parse(_priceController.text);
       await _bankService.update(newBank);

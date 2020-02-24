@@ -40,6 +40,7 @@ class _ChartScreenState extends State<ChartScreen>
 
   _loadMonthTransactions() async {
     _transactionsGroup = [];
+
     var transactions = await _transactionService.getTransactionsForTheMonth(
         _bankProvider.selectedBank.id, DateTime.now());
 
@@ -65,6 +66,15 @@ class _ChartScreenState extends State<ChartScreen>
         transactionTypeData[0].amount += transaction.price;
       }
     }
+
+    // Sort by amount
+    _transactionsGroup.sort((groupData1, groupData2) {
+      if (groupData1.amount > groupData2.amount) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
   didChangeDependencies() {
@@ -85,10 +95,15 @@ class _ChartScreenState extends State<ChartScreen>
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
+    if (_bankProvider != null && _bankProvider.needsToLoadData) {
+      _bankProvider.askToReloadData(false);
+      _loadMonthTransactions();
+    }
+
     return BankBody(
-      height: 330,
+      height: 310,
       label: Container(
-        margin: EdgeInsets.only(bottom: 40, left: 16),
+        margin: EdgeInsets.only(bottom: 20, left: 16),
         child: Text(
           AppTranslations.of(context).text("home_screen_transactions"),
           style: TextStyle(
@@ -98,7 +113,7 @@ class _ChartScreenState extends State<ChartScreen>
         ),
       ),
       child: Container(
-        margin: EdgeInsets.only(top: 330, left: 16, right: 16),
+        margin: EdgeInsets.only(top: 310, left: 16, right: 16),
         child: Column(
           children: <Widget>[
             Center(
