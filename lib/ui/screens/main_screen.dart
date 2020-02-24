@@ -1,6 +1,4 @@
-import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
-import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/ui/screens/chart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +25,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   /// Changes the displayed tab to the specified [index]
-  onTabClicked(int index) {
+  _onTabClicked(int index) {
     setState(() {
       _index = index;
     });
@@ -42,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
       backgroundColor: _themeProvider.backgroundColor,
       elevation: 0,
       currentIndex: _index,
-      onTap: onTabClicked,
+      onTap: _onTabClicked,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.credit_card,

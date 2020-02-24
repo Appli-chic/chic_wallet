@@ -21,7 +21,7 @@ class _ManageCategoryScreenState extends State<ManageCategoryScreen> {
 
     if (_typeTransactionService == null) {
       _typeTransactionService =
-          Provider.of<TypeTransactionService>(context, listen: true);
+          Provider.of<TypeTransactionService>(context);
       _loadAllTypeTransactions();
     }
   }

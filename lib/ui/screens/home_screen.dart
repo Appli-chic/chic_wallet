@@ -17,13 +17,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   TransactionService _transactionService;
   BankProvider _bankProvider;
 
-  _loadTransactions() async {
-    if (_bankProvider.selectedBank != null) {
-      _bankProvider.setTransactions(await _transactionService
-          .getAllByBankId(_bankProvider.selectedBank.id));
-    }
-  }
-
   Widget _displaysTransactions() {
     if (_bankProvider.transactions.isNotEmpty) {
       return ListView.builder(
@@ -64,14 +57,22 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     }
   }
 
+  _loadTransactions() async {
+    if (_bankProvider.selectedBank != null) {
+      _bankProvider.setTransactions(await _transactionService
+          .getAllByBankId(_bankProvider.selectedBank.id));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
     _transactionService =
-        Provider.of<TransactionService>(context, listen: true);
+        Provider.of<TransactionService>(context);
     _bankProvider = Provider.of<BankProvider>(context, listen: true);
 
-    if (_bankProvider != null && _bankProvider.needsToLoadData) {
+    if (_bankProvider.needToReloadHome) {
+      _bankProvider.homePageReloaded();
       _loadTransactions();
     }
 

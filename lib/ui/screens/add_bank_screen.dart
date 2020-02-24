@@ -1,5 +1,6 @@
 import 'package:chic_wallet/localization/app_translations.dart';
 import 'package:chic_wallet/models/db/bank.dart';
+import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/bank_service.dart';
 import 'package:chic_wallet/ui/components/app_bar_image.dart';
@@ -19,6 +20,7 @@ class AddBankScreen extends StatefulWidget {
 class _AddBankScreenState extends State<AddBankScreen> {
   ThemeProvider _themeProvider;
   BankService _bankService;
+  BankProvider _bankProvider;
 
   DateTime _validityDate;
 
@@ -107,6 +109,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
           return null;
         }
 
+        _bankProvider.askReloadData();
         Navigator.pop(context);
       } else {
         setState(() {
@@ -147,6 +150,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+    _bankProvider = Provider.of<BankProvider>(context, listen: true);
     _bankService = Provider.of<BankService>(context);
     final size = MediaQuery.of(context).size;
 

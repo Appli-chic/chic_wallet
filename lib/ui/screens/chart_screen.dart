@@ -75,6 +75,10 @@ class _ChartScreenState extends State<ChartScreen>
         return 0;
       }
     });
+
+    setState(() {
+
+    });
   }
 
   didChangeDependencies() {
@@ -86,7 +90,7 @@ class _ChartScreenState extends State<ChartScreen>
 
     if (_transactionService == null) {
       _transactionService =
-          Provider.of<TransactionService>(context, listen: true);
+          Provider.of<TransactionService>(context);
       _loadMonthTransactions();
     }
   }
@@ -95,8 +99,8 @@ class _ChartScreenState extends State<ChartScreen>
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
-    if (_bankProvider != null && _bankProvider.needsToLoadData) {
-      _bankProvider.askToReloadData(false);
+    if(_bankProvider.needToReloadChart) {
+      _bankProvider.chartPageReloaded();
       _loadMonthTransactions();
     }
 

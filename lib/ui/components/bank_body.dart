@@ -30,6 +30,8 @@ class _BankBodyState extends State<BankBody> {
   BankProvider _bankProvider;
   BankService _bankService;
 
+  CarouselSlider _carousel;
+
   didChangeDependencies() {
     super.didChangeDependencies();
 
@@ -39,6 +41,10 @@ class _BankBodyState extends State<BankBody> {
 
     if (_bankService == null) {
       _bankService = Provider.of<BankService>(context);
+    }
+
+    if(_carousel != null) {
+      _carousel.jumpToPage(_bankProvider.index);
     }
   }
 
@@ -53,7 +59,7 @@ class _BankBodyState extends State<BankBody> {
 
   Widget _displaysBankCards() {
     if (_bankProvider.banks.isNotEmpty) {
-      return CarouselSlider(
+      _carousel = CarouselSlider(
         height: 140,
         autoPlay: false,
         enlargeCenterPage: true,
@@ -67,16 +73,17 @@ class _BankBodyState extends State<BankBody> {
         }).toList(),
         onPageChanged: (index) {
           _bankProvider.selectBank(_bankProvider.banks[index].id);
-          _bankProvider.askToReloadData(true);
+          _bankProvider.askReloadData();
         },
       );
+
+      return _carousel;
     } else {
       return Center(
         child: GestureDetector(
           onTap: () async {
             await Navigator.pushNamed(context, '/add_bank_screen');
             await _loadAllBanks();
-            _bankProvider.askToReloadData(true);
           },
           child: Container(
             height: 140,
@@ -166,7 +173,6 @@ class _BankBodyState extends State<BankBody> {
                       onPressed: () async {
                         await Navigator.pushNamed(context, '/add_bank_screen');
                         await _loadAllBanks();
-                        _bankProvider.askToReloadData(true);
                       },
                     ),
                   ],

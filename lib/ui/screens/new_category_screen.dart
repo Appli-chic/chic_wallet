@@ -33,7 +33,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
 
     if (_typeTransactionService == null) {
       _typeTransactionService =
-          Provider.of<TypeTransactionService>(context, listen: true);
+          Provider.of<TypeTransactionService>(context);
     }
   }
 

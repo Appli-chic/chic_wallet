@@ -26,14 +26,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (_transactionService == null) {
       _transactionService =
-          Provider.of<TransactionService>(context, listen: true);
+          Provider.of<TransactionService>(context);
     }
 
     if (_bankService == null) {
       _bankService = Provider.of<BankService>(context);
 
       _loadAllBanks().then((_) async {
-        _bankProvider.askToReloadData(true);
         await _loadTransactions();
 
         Navigator.pushReplacementNamed(context, '/');
@@ -42,8 +41,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _loadTransactions() async {
-    _bankProvider.askToReloadData(false);
-
     if (_bankProvider.selectedBank != null) {
       _bankProvider.setTransactions(await _transactionService
           .getAllByBankId(_bankProvider.selectedBank.id));

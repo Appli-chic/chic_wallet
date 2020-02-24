@@ -115,11 +115,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         ),
       );
 
-      _bankProvider.askToReloadData(true);
       var newBank = _bankProvider.selectedBank;
       newBank.money +=  _paymentType == 0 ? -double.parse(_priceController.text) : double.parse(_priceController.text);
       await _bankService.update(newBank);
 
+      _bankProvider.askReloadData();
       Navigator.pop(context);
     }
 
@@ -150,9 +150,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
     _bankProvider = Provider.of<BankProvider>(context, listen: true);
     _transactionService =
-        Provider.of<TransactionService>(context, listen: true);
+        Provider.of<TransactionService>(context);
     _bankService =
-        Provider.of<BankService>(context, listen: true);
+        Provider.of<BankService>(context);
 
     final size = MediaQuery.of(context).size;
 
