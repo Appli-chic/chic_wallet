@@ -42,8 +42,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TextEditingController _repeatController = TextEditingController();
 
   int _paymentType = 0;
-  int _indexRepeat1 = -1;
-  int _indexRepeat2 = -1;
+  int _indexRepeat = -1;
+  int _nbRepeat = -1;
 
   didChangeDependencies() {
     super.didChangeDependencies();
@@ -113,15 +113,21 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         Transaction(
           title: _titleController.text,
           description: _descriptionController.text,
-          price: _paymentType == 0 ? -double.parse(_priceController.text) : double.parse(_priceController.text),
+          price: _paymentType == 0
+              ? -double.parse(_priceController.text)
+              : double.parse(_priceController.text),
           date: DateTime.now(),
           typeTransaction: _typeTransactionsList[typeTransactionIndex],
           bank: _bankProvider.selectedBank,
+          nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
+          indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
         ),
       );
 
       var newBank = _bankProvider.selectedBank;
-      newBank.money +=  _paymentType == 0 ? -double.parse(_priceController.text) : double.parse(_priceController.text);
+      newBank.money += _paymentType == 0
+          ? -double.parse(_priceController.text)
+          : double.parse(_priceController.text);
       await _bankService.update(newBank);
 
       _bankProvider.askReloadData();
@@ -149,19 +155,20 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     }
   }
 
-  _onMultipleSelectChose(int index1, String result1, int index2, String result2) {
-    _indexRepeat1 = index1;
-    _indexRepeat2 = index2;
+  _onMultipleSelectChose(
+      int index1, String result1, int index2, String result2) {
+    _indexRepeat = index2;
+    _nbRepeat = int.parse(result1);
 
     // Write a text corresponding to the selection
     bool isSingular = true;
 
-    if(result1 != "1") {
+    if (result1 != "1") {
       isSingular = false;
     }
 
-    if(isSingular) {
-      switch(index2) {
+    if (isSingular) {
+      switch (index2) {
         case 0:
           _repeatController.text = AppTranslations.of(context)
               .text("add_transaction_repeat_every_day");
@@ -180,22 +187,22 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           break;
       }
     } else {
-      switch(index2) {
+      switch (index2) {
         case 0:
-          _repeatController.text = AppTranslations.of(context)
-              .textWithArgument("add_transaction_repeat_every_many_day", result1);
+          _repeatController.text = AppTranslations.of(context).textWithArgument(
+              "add_transaction_repeat_every_many_day", result1);
           break;
         case 1:
-          _repeatController.text = AppTranslations.of(context)
-              .textWithArgument("add_transaction_repeat_every_many_week", result1);
+          _repeatController.text = AppTranslations.of(context).textWithArgument(
+              "add_transaction_repeat_every_many_week", result1);
           break;
         case 2:
-          _repeatController.text = AppTranslations.of(context)
-              .textWithArgument("add_transaction_repeat_every_many_month", result1);
+          _repeatController.text = AppTranslations.of(context).textWithArgument(
+              "add_transaction_repeat_every_many_month", result1);
           break;
         case 3:
-          _repeatController.text = AppTranslations.of(context)
-              .textWithArgument("add_transaction_repeat_every_many_year", result1);
+          _repeatController.text = AppTranslations.of(context).textWithArgument(
+              "add_transaction_repeat_every_many_year", result1);
           break;
       }
     }
@@ -203,7 +210,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   @override
   void initState() {
-    for(var i = 1; i != 366; i++) {
+    for (var i = 1; i != 366; i++) {
       _numberDayInYearList.add(i.toString());
     }
 
@@ -215,10 +222,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
     _bankProvider = Provider.of<BankProvider>(context, listen: true);
-    _transactionService =
-        Provider.of<TransactionService>(context);
-    _bankService =
-        Provider.of<BankService>(context);
+    _transactionService = Provider.of<TransactionService>(context);
+    _bankService = Provider.of<BankService>(context);
 
     final size = MediaQuery.of(context).size;
 
@@ -319,12 +324,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           controller: _repeatController,
                           fieldType: TextFieldType.multipleSelect,
                           listFields: _numberDayInYearList,
-                          listFields2: AppTranslations.of(context).list("add_transaction_repeat_list"),
+                          listFields2: AppTranslations.of(context)
+                              .list("add_transaction_repeat_list"),
                           onMultipleSelectChose: _onMultipleSelectChose,
                           onDeletePressed: () {
                             _repeatController.text = "";
-                            _indexRepeat1 = -1;
-                            _indexRepeat2 = -1;
+                            _indexRepeat = -1;
+                            _nbRepeat = -1;
                           },
                           hint: AppTranslations.of(context)
                               .text("add_transaction_repeat"),

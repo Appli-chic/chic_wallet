@@ -13,6 +13,9 @@ class Transaction {
   DateTime date;
   TypeTransaction typeTransaction;
   Bank bank;
+  int nbDayRepeat;
+  int indexTypeRepeat;
+  DateTime lastUsedDateSubscription;
 
   Transaction({
     this.id,
@@ -22,6 +25,9 @@ class Transaction {
     this.date,
     this.typeTransaction,
     this.bank,
+    this.nbDayRepeat,
+    this.indexTypeRepeat,
+    this.lastUsedDateSubscription,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
@@ -33,6 +39,9 @@ class Transaction {
       date: json['date'],
       typeTransaction: json['type_transaction'],
       bank: json['bank'],
+      nbDayRepeat: json['nb_day_repeat'],
+      indexTypeRepeat: json['index_type_repeat'],
+      lastUsedDateSubscription: json['last_used_date_subscription'],
     );
   }
 
@@ -45,12 +54,17 @@ class Transaction {
     data['date'] = this.date;
     data['type_transaction'] = this.typeTransaction;
     data['bank'] = this.bank;
+    data['nb_day_repeat'] = this.nbDayRepeat;
+    data['index_type_repeat'] = this.indexTypeRepeat;
+    data['last_used_date_subscription'] = this.lastUsedDateSubscription;
     return data;
   }
 
   Map<String, dynamic> toMap() {
     var dateFormatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
     String dateString = dateFormatter.format(this.date);
+    String lastUsedDateSubscriptionString = dateFormatter.format(
+        this.lastUsedDateSubscription);
 
     return {
       'id': this.id,
@@ -60,6 +74,9 @@ class Transaction {
       'date': dateString,
       'type_transaction_id': this.typeTransaction.id,
       'bank_id': this.bank.id,
+      'nb_day_repeat': this.nbDayRepeat,
+      'index_type_repeat': this.indexTypeRepeat,
+      'last_used_date_subscription': lastUsedDateSubscriptionString,
     };
   }
 }
