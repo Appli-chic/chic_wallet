@@ -44,6 +44,10 @@ class AppTranslations {
     return result;
   }
 
+  String textWithArgument(String key, String arg) {
+    return _localisedValues[key].toString().replaceFirst('{}', arg) ?? key;
+  }
+
   String textWithArguments(String key, List<String> args) {
     return _localisedValues[key] ?? key;
   }

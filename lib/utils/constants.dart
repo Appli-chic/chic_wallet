@@ -9,6 +9,9 @@ const List<String> LIST_CARD_TYPES = ["Visa", "Mastercard"];
 const List<String> LIST_CURRENCIES_NAMES = ["Dollar", "Euro"];
 const List<String> LIST_CURRENCIES = ["\$", "€"];
 
+const List<int> LIST_REPEAT_VALUE = [0, 1];
+const List<String> LIST_REPEAT_NAMES = ['months', 'years'];
+
 const IconData BASKET_ICON = const IconData(0xe800, fontFamily: 'Cart');
 
 String displaysCurrency(Bank bank) {

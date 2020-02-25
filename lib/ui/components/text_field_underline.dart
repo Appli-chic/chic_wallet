@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,8 @@ class TextFieldType {
   static const TextFieldType date = TextFieldType._(1);
 
   static const TextFieldType select = TextFieldType._(2);
+
+  static const TextFieldType multipleSelect = TextFieldType._(3);
 }
 
 class TextFieldUnderline extends StatefulWidget {
@@ -27,9 +31,12 @@ class TextFieldUnderline extends StatefulWidget {
   final Function(String) onSubmitted;
   final TextFieldType fieldType;
   final List<String> listFields;
+  final List<String> listFields2;
   final Function(DateTime) onDateSelected;
   final TextInputType inputType;
   final List<TextInputFormatter> inputFormatterList;
+  final Function(int, String, int, String) onMultipleSelectChose;
+  final Function() onDeletePressed;
 
   TextFieldUnderline({
     @required this.controller,
@@ -43,6 +50,9 @@ class TextFieldUnderline extends StatefulWidget {
     this.onDateSelected,
     this.inputType = TextInputType.text,
     this.inputFormatterList = const [],
+    this.listFields2 = const [],
+    this.onMultipleSelectChose,
+    this.onDeletePressed,
   });
 
   @override
@@ -51,6 +61,11 @@ class TextFieldUnderline extends StatefulWidget {
 
 class _TextFieldUnderlineState extends State<TextFieldUnderline> {
   ThemeProvider _themeProvider;
+  String _firstPickerResult;
+  int _firstPickerIndex = 0;
+  String _secondPickerResult;
+  int _secondPickerIndex = 0;
+  bool _isNotClickable = false;
 
   _onSelectInputClicked() async {
     showCupertinoModalPopup(
@@ -75,6 +90,84 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
                 ),
               );
             }),
+          ),
+        );
+      },
+    );
+  }
+
+  _onMultipleSelectInputClicked() async {
+    // Pre selection of the first inputs
+    if (widget.controller.text.isEmpty) {
+      _firstPickerResult = widget.listFields[0];
+      _firstPickerIndex = 0;
+      _secondPickerResult = widget.listFields[0];
+      _secondPickerIndex = 0;
+
+      widget.onMultipleSelectChose(_firstPickerIndex, _firstPickerResult,
+          _secondPickerIndex, _secondPickerResult);
+    }
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200,
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: CupertinoPicker(
+                  backgroundColor: _themeProvider.backgroundColor,
+                  itemExtent: 30,
+                  onSelectedItemChanged: (int index) {
+                    _firstPickerResult = widget.listFields[index];
+                    _firstPickerIndex = index;
+                    widget.onMultipleSelectChose(
+                        _firstPickerIndex,
+                        _firstPickerResult,
+                        _secondPickerIndex,
+                        _secondPickerResult);
+                  },
+                  children: List<Widget>.generate(widget.listFields.length,
+                      (int index) {
+                    return Center(
+                      child: Text(
+                        widget.listFields[index],
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              Expanded(
+                child: CupertinoPicker(
+                  backgroundColor: _themeProvider.backgroundColor,
+                  itemExtent: 30,
+                  onSelectedItemChanged: (int index) {
+                    _secondPickerResult = widget.listFields[index];
+                    _secondPickerIndex = index;
+                    widget.onMultipleSelectChose(
+                        _firstPickerIndex,
+                        _firstPickerResult,
+                        _secondPickerIndex,
+                        _secondPickerResult);
+                  },
+                  children: List<Widget>.generate(widget.listFields2.length,
+                      (int index) {
+                    return Center(
+                      child: Text(
+                        widget.listFields2[index],
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -116,6 +209,16 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
   }
 
   @override
+  void initState() {
+    if (widget.fieldType == TextFieldType.multipleSelect) {
+      _firstPickerResult = widget.listFields[0];
+      _secondPickerResult = widget.listFields2[0];
+    }
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
@@ -147,18 +250,43 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
           borderSide:
               BorderSide(color: _themeProvider.secondTextColor, width: 0.0),
         ),
+        suffix: widget.fieldType == TextFieldType.multipleSelect
+            ? GestureDetector(
+                onTap: () async {
+                  _isNotClickable = true;
+                  widget.onDeletePressed();
+                  FocusScope.of(context).requestFocus(FocusNode());
+
+                  Future.delayed(Duration(milliseconds: 300), () {
+                    _isNotClickable = false;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Icon(
+                    Icons.close,
+                    color: _themeProvider.textColor,
+                  ),
+                ),
+              )
+            : null,
       ),
       style: TextStyle(color: _themeProvider.textColor, fontSize: 16),
       onSubmitted: widget.onSubmitted,
       readOnly: widget.fieldType == TextFieldType.date ||
-              widget.fieldType == TextFieldType.select
+              widget.fieldType == TextFieldType.select ||
+              widget.fieldType == TextFieldType.multipleSelect
           ? true
           : false,
       onTap: () {
-        if (widget.fieldType == TextFieldType.date) {
-          _onDateInputClicked();
-        } else if (widget.fieldType == TextFieldType.select) {
-          _onSelectInputClicked();
+        if (!_isNotClickable) {
+          if (widget.fieldType == TextFieldType.date) {
+            _onDateInputClicked();
+          } else if (widget.fieldType == TextFieldType.select) {
+            _onSelectInputClicked();
+          } else if (widget.fieldType == TextFieldType.multipleSelect) {
+            _onMultipleSelectInputClicked();
+          }
         }
       },
     );

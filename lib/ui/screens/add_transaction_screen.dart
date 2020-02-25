@@ -29,6 +29,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   List<String> _typeTransactionsTextList = [];
   List<TypeTransaction> _typeTransactionsList = [];
+  List<String> _numberDayInYearList = [];
 
   final _descriptionFocus = FocusNode();
   final _priceFocus = FocusNode();
@@ -38,7 +39,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
   TextEditingController _categoryController = TextEditingController();
+  TextEditingController _repeatController = TextEditingController();
+
   int _paymentType = 0;
+  int _indexRepeat1 = -1;
+  int _indexRepeat2 = -1;
 
   didChangeDependencies() {
     super.didChangeDependencies();
@@ -144,6 +149,67 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     }
   }
 
+  _onMultipleSelectChose(int index1, String result1, int index2, String result2) {
+    _indexRepeat1 = index1;
+    _indexRepeat2 = index2;
+
+    // Write a text corresponding to the selection
+    bool isSingular = true;
+
+    if(result1 != "1") {
+      isSingular = false;
+    }
+
+    if(isSingular) {
+      switch(index2) {
+        case 0:
+          _repeatController.text = AppTranslations.of(context)
+              .text("add_transaction_repeat_every_day");
+          break;
+        case 1:
+          _repeatController.text = AppTranslations.of(context)
+              .text("add_transaction_repeat_every_week");
+          break;
+        case 2:
+          _repeatController.text = AppTranslations.of(context)
+              .text("add_transaction_repeat_every_month");
+          break;
+        case 3:
+          _repeatController.text = AppTranslations.of(context)
+              .text("add_transaction_repeat_every_year");
+          break;
+      }
+    } else {
+      switch(index2) {
+        case 0:
+          _repeatController.text = AppTranslations.of(context)
+              .textWithArgument("add_transaction_repeat_every_many_day", result1);
+          break;
+        case 1:
+          _repeatController.text = AppTranslations.of(context)
+              .textWithArgument("add_transaction_repeat_every_many_week", result1);
+          break;
+        case 2:
+          _repeatController.text = AppTranslations.of(context)
+              .textWithArgument("add_transaction_repeat_every_many_month", result1);
+          break;
+        case 3:
+          _repeatController.text = AppTranslations.of(context)
+              .textWithArgument("add_transaction_repeat_every_many_year", result1);
+          break;
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    for(var i = 1; i != 366; i++) {
+      _numberDayInYearList.add(i.toString());
+    }
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
@@ -245,6 +311,23 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           hint: AppTranslations.of(context)
                               .text("add_transaction_price"),
                           textInputAction: TextInputAction.done,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16, bottom: 16),
+                        child: TextFieldUnderline(
+                          controller: _repeatController,
+                          fieldType: TextFieldType.multipleSelect,
+                          listFields: _numberDayInYearList,
+                          listFields2: AppTranslations.of(context).list("add_transaction_repeat_list"),
+                          onMultipleSelectChose: _onMultipleSelectChose,
+                          onDeletePressed: () {
+                            _repeatController.text = "";
+                            _indexRepeat1 = -1;
+                            _indexRepeat2 = -1;
+                          },
+                          hint: AppTranslations.of(context)
+                              .text("add_transaction_repeat"),
                         ),
                       ),
                       Padding(
