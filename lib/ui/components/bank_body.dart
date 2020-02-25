@@ -42,10 +42,6 @@ class _BankBodyState extends State<BankBody> {
     if (_bankService == null) {
       _bankService = Provider.of<BankService>(context);
     }
-
-    if(_carousel != null) {
-      _carousel.jumpToPage(_bankProvider.index);
-    }
   }
 
   Future<void> _loadAllBanks() async {
@@ -209,6 +205,11 @@ class _BankBodyState extends State<BankBody> {
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+    _bankProvider = Provider.of<BankProvider>(context, listen: true);
+
+    if (_carousel != null) {
+      _carousel.jumpToPage(_bankProvider.index);
+    }
 
     return SingleChildScrollView(
       physics: ClampingScrollPhysics(),

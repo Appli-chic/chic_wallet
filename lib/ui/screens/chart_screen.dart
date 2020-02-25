@@ -98,6 +98,7 @@ class _ChartScreenState extends State<ChartScreen>
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+    _bankProvider = Provider.of<BankProvider>(context, listen: true);
 
     if(_bankProvider.needToReloadChart) {
       _bankProvider.chartPageReloaded();
