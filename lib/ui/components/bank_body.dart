@@ -69,7 +69,7 @@ class _BankBodyState extends State<BankBody> {
         }).toList(),
         onPageChanged: (index) {
           _bankProvider.selectBank(_bankProvider.banks[index].id);
-          _bankProvider.askReloadData();
+          _bankProvider.askReloadData(didBankCardChanged: true);
         },
       );
 

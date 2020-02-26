@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
   _loadTransactions() async {
     if (_bankProvider.selectedBank != null) {
       _bankProvider.setTransactions(await _transactionService
-          .getAllByBankId(_bankProvider.selectedBank.id));
+          .getAllByBankIdPaged(_bankProvider.selectedBank.id, 0));
     }
   }
 

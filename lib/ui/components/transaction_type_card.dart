@@ -97,7 +97,7 @@ class _TransactionTypeCardState extends State<TransactionTypeCard> {
                 right: 16,
               ),
               child: Text(
-                "${displaysCurrency(widget.bank)}${widget.transactionTypeGroupData.amount.abs()}",
+                "${displaysCurrency(widget.bank)}${widget.transactionTypeGroupData.amount.abs().toStringAsFixed(2)}",
                 style: TextStyle(
                   color: widget.transactionTypeGroupData.amount >= 0
                       ? Color(0xFF5EB863)

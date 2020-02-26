@@ -9,6 +9,7 @@ class BankProvider with ChangeNotifier {
   int _index = 0;
   bool _needToReloadHome = false;
   bool _needToReloadChart = false;
+  bool _bankCardChanged = false;
 
   setBanks(List<Bank> banks) {
     _banks = banks;
@@ -37,9 +38,14 @@ class BankProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  askReloadData() {
+  askReloadData({bool didBankCardChanged}) {
     _needToReloadHome = true;
     _needToReloadChart = true;
+
+    if(didBankCardChanged) {
+      _bankCardChanged = true;
+    }
+
     notifyListeners();
   }
 
@@ -51,6 +57,10 @@ class BankProvider with ChangeNotifier {
     _needToReloadChart = false;
   }
 
+  bankCardChangedDone() {
+    _bankCardChanged = false;
+  }
+
   List<Bank> get banks => _banks;
 
   List<Transaction> get transactions => _transactions;
@@ -60,6 +70,8 @@ class BankProvider with ChangeNotifier {
   bool get needToReloadHome => _needToReloadHome;
 
   bool get needToReloadChart => _needToReloadChart;
+
+  bool get didBankCardChanged => _bankCardChanged;
 
   int get index => _index;
 }

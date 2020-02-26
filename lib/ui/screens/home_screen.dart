@@ -12,10 +12,30 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin<HomeScreen> {
   ThemeProvider _themeProvider;
   TransactionService _transactionService;
   BankProvider _bankProvider;
+  int _page = 0;
+
+  _loadTransactions() async {
+    if (_bankProvider.selectedBank != null) {
+      _bankProvider.setTransactions(await _transactionService
+          .getAllByBankIdPaged(_bankProvider.selectedBank.id, _page));
+    }
+  }
+
+  _loadMoreTransactions() async {
+    if (_bankProvider.selectedBank != null) {
+      var transactions = _bankProvider.transactions;
+      var newTransactions = await _transactionService.getAllByBankIdPaged(
+          _bankProvider.selectedBank.id, _page);
+
+      transactions.addAll(newTransactions);
+      _bankProvider.setTransactions(transactions);
+    }
+  }
 
   Widget _displaysTransactions() {
     if (_bankProvider.transactions.isNotEmpty) {
@@ -57,37 +77,45 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     }
   }
 
-  _loadTransactions() async {
-    if (_bankProvider.selectedBank != null) {
-      _bankProvider.setTransactions(await _transactionService
-          .getAllByBankId(_bankProvider.selectedBank.id));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
-    _transactionService =
-        Provider.of<TransactionService>(context);
+    _transactionService = Provider.of<TransactionService>(context);
     _bankProvider = Provider.of<BankProvider>(context, listen: true);
 
     if (_bankProvider.needToReloadHome) {
       _bankProvider.homePageReloaded();
+
+      if (_bankProvider.didBankCardChanged) {
+        _bankProvider.bankCardChangedDone();
+        _page = 0;
+      }
+
       _loadTransactions();
     }
 
-    return BankBody(
-      child: Container(
-        margin: EdgeInsets.only(top: 450, left: 16, right: 16),
-        child: _displaysTransactions(),
-      ),
-      label: Container(
-        margin: EdgeInsets.only(bottom: 40, left: 16),
-        child: Text(
-          AppTranslations.of(context).text("home_screen_transactions"),
-          style: TextStyle(
-            color: _themeProvider.textColor,
-            fontSize: 18,
+    return NotificationListener(
+      onNotification: (ScrollNotification scrollInfo) {
+        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+          _page++;
+          _loadMoreTransactions();
+        }
+
+        return true;
+      },
+      child: BankBody(
+        child: Container(
+          margin: EdgeInsets.only(top: 450, left: 16, right: 16),
+          child: _displaysTransactions(),
+        ),
+        label: Container(
+          margin: EdgeInsets.only(bottom: 40, left: 16),
+          child: Text(
+            AppTranslations.of(context).text("home_screen_transactions"),
+            style: TextStyle(
+              color: _themeProvider.textColor,
+              fontSize: 18,
+            ),
           ),
         ),
       ),

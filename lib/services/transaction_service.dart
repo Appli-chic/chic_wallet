@@ -6,6 +6,8 @@ import 'package:chic_wallet/utils/sqlite.dart';
 import 'package:http/http.dart';
 
 class TransactionService {
+  static final int pagination = 10;
+
   Client client = Client();
   final Env env;
 
@@ -59,7 +61,7 @@ class TransactionService {
     });
   }
 
-  Future<List<Transaction>> getAllByBankId(int bankId) async {
+  Future<List<Transaction>> getAllByBankIdPaged(int bankId, int page) async {
     var result = await sqlQuery(
         "SELECT ${Transaction.tableName}.id, ${Transaction.tableName}.title, ${Transaction.tableName}.description, "
         "${Transaction.tableName}.price, ${Transaction.tableName}.price, ${Transaction.tableName}.date, "
@@ -69,7 +71,9 @@ class TransactionService {
         "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = ${Transaction.tableName}.type_transaction_id "
         "left join ${Bank.tableName} ON ${Bank.tableName}.id = ${Transaction.tableName}.bank_id "
         "where ${Bank.tableName}.id = $bankId "
-        "order by ${Transaction.tableName}.date desc ");
+        "order by ${Transaction.tableName}.date desc "
+        "limit $pagination "
+        "offset ${page * pagination}");
 
     return List.generate(result.length, (i) {
       return _fromJsonQuery(result[i]);

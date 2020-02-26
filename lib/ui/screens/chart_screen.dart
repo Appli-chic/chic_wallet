@@ -41,44 +41,46 @@ class _ChartScreenState extends State<ChartScreen>
   _loadMonthTransactions() async {
     _transactionsGroup = [];
 
-    var transactions = await _transactionService.getTransactionsForTheMonth(
-        _bankProvider.selectedBank.id, DateTime.now());
+    if( _bankProvider.selectedBank != null) {
+      var transactions = await _transactionService.getTransactionsForTheMonth(
+          _bankProvider.selectedBank.id, DateTime.now());
 
-    for (var transaction in transactions) {
-      var transactionTypeData = _transactionsGroup
-          .where((d) => d.idType == transaction.typeTransaction.id)
-          .toList();
+      for (var transaction in transactions) {
+        var transactionTypeData = _transactionsGroup
+            .where((d) => d.idType == transaction.typeTransaction.id)
+            .toList();
 
-      if (transactionTypeData.isEmpty) {
-        var color = TypeTransaction.getColor(transaction.typeTransaction.color);
+        if (transactionTypeData.isEmpty) {
+          var color = TypeTransaction.getColor(transaction.typeTransaction.color);
 
-        _transactionsGroup.add(
-          TransactionTypeGroupData(
-            idType: transaction.typeTransaction.id,
-            typeName: transaction.typeTransaction.title,
-            amount: transaction.price,
-            color: color,
-            icon: TypeTransaction.getIconData(
-                transaction.typeTransaction.iconName),
-          ),
-        );
-      } else {
-        transactionTypeData[0].amount += transaction.price;
+          _transactionsGroup.add(
+            TransactionTypeGroupData(
+              idType: transaction.typeTransaction.id,
+              typeName: transaction.typeTransaction.title,
+              amount: transaction.price,
+              color: color,
+              icon: TypeTransaction.getIconData(
+                  transaction.typeTransaction.iconName),
+            ),
+          );
+        } else {
+          transactionTypeData[0].amount += transaction.price;
+        }
       }
+
+      // Sort by amount
+      _transactionsGroup.sort((groupData1, groupData2) {
+        if (groupData1.amount > groupData2.amount) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+
+      setState(() {
+
+      });
     }
-
-    // Sort by amount
-    _transactionsGroup.sort((groupData1, groupData2) {
-      if (groupData1.amount > groupData2.amount) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-
-    setState(() {
-
-    });
   }
 
   didChangeDependencies() {

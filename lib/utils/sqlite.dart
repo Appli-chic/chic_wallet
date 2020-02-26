@@ -19,7 +19,7 @@ Future<Database> openCWDatabase() async {
           "CREATE TABLE ${TypeTransaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, color TEXT, icon_name TEXT) ");
 
       await db.execute(
-          "CREATE TABLE ${t.Transaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, description TEXT, price REAL, date DATETIME, nb_day_repeat INTEGER, index_type_repeat INTEGER, last_used_date_subscription DATETIME, bank_id INTEGER, type_transaction_id INTEGER, FOREIGN KEY(bank_id) REFERENCES ${Bank.tableName}(id), FOREIGN KEY(type_transaction_id) REFERENCES ${TypeTransaction.tableName}(id)) ");
+          "CREATE TABLE ${t.Transaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, description TEXT, price REAL, date DATETIME, nb_day_repeat INTEGER, index_type_repeat INTEGER, start_subscription_date DATETIME, bank_id INTEGER, type_transaction_id INTEGER, FOREIGN KEY(bank_id) REFERENCES ${Bank.tableName}(id), FOREIGN KEY(type_transaction_id) REFERENCES ${TypeTransaction.tableName}(id)) ");
 
       // Insert basic type transactions
       await db.execute(
@@ -35,43 +35,61 @@ Future<Database> openCWDatabase() async {
 Future<void> addRow(String tableName, Map<String, dynamic> row) async {
   final Database db = await openCWDatabase();
 
-  await db.insert(
-    tableName,
-    row,
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
+  try {
+    await db.insert(
+      tableName,
+      row,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
 
-  await db.close();
+    await db.close();
+  } catch (e) {
+    await db.close();
+  }
 }
 
 Future<void> updateRow(String tableName, Map<String, dynamic> row) async {
   final Database db = await openCWDatabase();
 
-  await db.update(
-    tableName,
-    row,
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
+  try {
+    await db.update(
+      tableName,
+      row,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
 
-  await db.close();
+    await db.close();
+  } catch (e) {
+    await db.close();
+  }
 }
 
 Future<List<dynamic>> sqlQuery(String query) async {
   final Database db = await openCWDatabase();
 
-  var result = await db.rawQuery(query);
+  try {
+    var result = await db.rawQuery(query);
 
-  await db.close();
+    await db.close();
 
-  return result;
+    return result;
+  } catch (e) {
+    await db.close();
+
+    return List();
+  }
 }
 
 Future<List<dynamic>> getAllRows(String tableName) async {
   final Database db = await openCWDatabase();
 
-  var result = await db.query(tableName);
+  try {
+    var result = await db.query(tableName);
 
-  await db.close();
-
-  return result;
+    await db.close();
+    return result;
+  } catch (e) {
+    await db.close();
+    return List();
+  }
 }

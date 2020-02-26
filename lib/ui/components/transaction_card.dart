@@ -115,7 +115,7 @@ class _TransactionCardState extends State<TransactionCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Text(
-                    "${displaysCurrency(widget.transaction.bank)}${widget.transaction.price.abs()}",
+                    "${displaysCurrency(widget.transaction.bank)}${widget.transaction.price.abs().toStringAsFixed(2)}",
                     style: TextStyle(
                       color: widget.transaction.price >= 0
                           ? Color(0xFF5EB863)
