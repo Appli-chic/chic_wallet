@@ -40,10 +40,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TextEditingController _priceController = TextEditingController();
   TextEditingController _categoryController = TextEditingController();
   TextEditingController _repeatController = TextEditingController();
+  TextEditingController _repeatDateController = TextEditingController();
 
   int _paymentType = 0;
   int _indexRepeat = -1;
   int _nbRepeat = -1;
+  DateTime _subscriptionDate;
 
   didChangeDependencies() {
     super.didChangeDependencies();
@@ -67,6 +69,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     setState(() {
       _typeTransactionsTextList = typeTransactionString;
+    });
+  }
+
+  _onSubscriptionDateSelected(DateTime date) {
+    setState(() {
+      _subscriptionDate = date;
     });
   }
 
@@ -103,6 +111,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           .add(AppTranslations.of(context).text("add_transaction_empty_bank"));
     }
 
+    if (_repeatController.text.isNotEmpty && _subscriptionDate == null) {
+      isValid = false;
+      errorList.add(AppTranslations.of(context)
+          .text("add_transaction_empty_subscription_date"));
+    }
+
     if (isValid) {
       var category = _typeTransactionsList
           .where((tt) => tt.title == _categoryController.text)
@@ -121,6 +135,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           bank: _bankProvider.selectedBank,
           nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
           indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
+          startSubscriptionDate: _subscriptionDate,
         ),
       );
 
@@ -206,6 +221,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           break;
       }
     }
+
+    setState(() {});
   }
 
   @override
@@ -331,11 +348,25 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             _repeatController.text = "";
                             _indexRepeat = -1;
                             _nbRepeat = -1;
+                            setState(() {});
                           },
                           hint: AppTranslations.of(context)
                               .text("add_transaction_repeat"),
                         ),
                       ),
+                      _repeatController.text.isNotEmpty
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 16, bottom: 16),
+                              child: TextFieldUnderline(
+                                controller: _repeatDateController,
+                                fieldType: TextFieldType.date,
+                                hint: AppTranslations.of(context)
+                                    .text("add_transaction_subscription_date"),
+                                onDateSelected: _onSubscriptionDateSelected,
+                              ),
+                            )
+                          : Container(),
                       Padding(
                         padding: const EdgeInsets.only(top: 16, bottom: 16),
                         child: TextFieldUnderline(

@@ -37,11 +37,13 @@
   "add_transaction_price": "Prix",
   "add_transaction_type": "Catégorie",
   "add_transaction_repeat": "Répéter",
+  "add_transaction_subscription_date": "Date d'abonnement",
   "add_transaction_add": "Ajouter",
   "add_transaction_empty_title": "Le titre ne doit pas être vide.",
   "add_transaction_empty_description": "La description ne doit pas être vide.",
   "add_transaction_empty_price": "Le prix ne doit pas être vide.",
   "add_transaction_empty_bank": "Une banque doit être séléctionnée.",
+  "add_transaction_empty_subscription_date": "Une date d'abonnement doit être sélectionnée.",
   "add_transaction_add_category": "+ Ajouter une catégorie",
   "add_transaction_repeat_list":  [
     "Jours",
