@@ -37,6 +37,7 @@ class TextFieldUnderline extends StatefulWidget {
   final List<TextInputFormatter> inputFormatterList;
   final Function(int, String, int, String) onMultipleSelectChose;
   final Function() onDeletePressed;
+  final String dateFormatString;
 
   TextFieldUnderline({
     @required this.controller,
@@ -53,6 +54,7 @@ class TextFieldUnderline extends StatefulWidget {
     this.listFields2 = const [],
     this.onMultipleSelectChose,
     this.onDeletePressed,
+    this.dateFormatString = "MM/yy",
   });
 
   @override
@@ -200,7 +202,7 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
     );
 
     if (selectedDate != null) {
-      var dateFormatter = DateFormat('MM/yy');
+      var dateFormatter = DateFormat(widget.dateFormatString);
       String dateString = dateFormatter.format(selectedDate);
 
       widget.controller.text = dateString;

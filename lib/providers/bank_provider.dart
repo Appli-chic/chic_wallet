@@ -42,7 +42,7 @@ class BankProvider with ChangeNotifier {
     _needToReloadHome = true;
     _needToReloadChart = true;
 
-    if(didBankCardChanged) {
+    if(didBankCardChanged != null && didBankCardChanged) {
       _bankCardChanged = true;
     }
 

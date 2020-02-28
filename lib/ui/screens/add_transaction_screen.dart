@@ -122,28 +122,33 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           .where((tt) => tt.title == _categoryController.text)
           .toList()[0];
       var typeTransactionIndex = _typeTransactionsList.indexOf(category);
-
-      await _transactionService.save(
-        Transaction(
-          title: _titleController.text,
-          description: _descriptionController.text,
-          price: _paymentType == 0
-              ? -double.parse(_priceController.text)
-              : double.parse(_priceController.text),
-          date: DateTime.now(),
-          typeTransaction: _typeTransactionsList[typeTransactionIndex],
-          bank: _bankProvider.selectedBank,
-          nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
-          indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
-          startSubscriptionDate: _subscriptionDate,
-        ),
+      var transaction = Transaction(
+        title: _titleController.text,
+        description: _descriptionController.text,
+        price: _paymentType == 0
+            ? -double.parse(_priceController.text)
+            : double.parse(_priceController.text),
+        date: DateTime.now(),
+        typeTransaction: _typeTransactionsList[typeTransactionIndex],
+        bank: _bankProvider.selectedBank,
+        nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
+        indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
+        startSubscriptionDate: _subscriptionDate,
       );
+
+      var transactionId = await _transactionService.save(transaction);
+      transaction.id = transactionId;
 
       var newBank = _bankProvider.selectedBank;
       newBank.money += _paymentType == 0
           ? -double.parse(_priceController.text)
           : double.parse(_priceController.text);
-      await _bankService.update(newBank);
+
+      if(transaction.startSubscriptionDate == null) {
+        await _bankService.update(newBank);
+      } else {
+        _transactionService.addTransactionsFromSubscription(transaction);
+      }
 
       _bankProvider.askReloadData();
       Navigator.pop(context);
@@ -364,6 +369,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                 hint: AppTranslations.of(context)
                                     .text("add_transaction_subscription_date"),
                                 onDateSelected: _onSubscriptionDateSelected,
+                                  dateFormatString: "MM/dd/yyyy",
                               ),
                             )
                           : Container(),

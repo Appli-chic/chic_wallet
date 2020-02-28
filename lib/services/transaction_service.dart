@@ -15,12 +15,127 @@ class TransactionService {
     this.env,
   });
 
-  Future<void> save(Transaction transaction) async {
-    await addRow(Transaction.tableName, transaction.toMap());
+  Future<List<Transaction>> getSubscriptionsByBankId(Bank bank) async {
+    var result = await sqlQuery(
+        "SELECT ${Transaction.tableName}.id, ${Transaction.tableName}.title, ${Transaction.tableName}.description, "
+        "${Transaction.tableName}.price, ${Transaction.tableName}.price, ${Transaction.tableName}.date, "
+        "${TypeTransaction.tableName}.id as tt_id, ${TypeTransaction.tableName}.title as tt_title, ${TypeTransaction.tableName}.color as tt_color, "
+        "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency, "
+        "${Transaction.tableName}.nb_day_repeat, ${Transaction.tableName}.index_type_repeat, ${Transaction.tableName}.start_subscription_date, "
+        "${Transaction.tableName}.transaction_id "
+        "FROM ${Transaction.tableName} "
+        "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = ${Transaction.tableName}.type_transaction_id "
+        "left join ${Bank.tableName} ON ${Bank.tableName}.id = ${Transaction.tableName}.bank_id "
+        "where ${Bank.tableName}.id = ${bank.id} "
+        "and nb_day_repeat IS NOT NULL ");
+
+    return List.generate(result.length, (i) {
+      return _fromJsonQuery(result[i]);
+    });
+  }
+
+  Future<List<Transaction>> getTransactionsLinkedToSubscription(
+      int transactionId) async {
+    var result = await sqlQuery(
+        "SELECT ${Transaction.tableName}.id, ${Transaction.tableName}.title, ${Transaction.tableName}.description, "
+        "${Transaction.tableName}.price, ${Transaction.tableName}.price, ${Transaction.tableName}.date, "
+        "${TypeTransaction.tableName}.id as tt_id, ${TypeTransaction.tableName}.title as tt_title, ${TypeTransaction.tableName}.color as tt_color, "
+        "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency, "
+        "${Transaction.tableName}.nb_day_repeat, ${Transaction.tableName}.index_type_repeat, ${Transaction.tableName}.start_subscription_date, "
+        "${Transaction.tableName}.transaction_id "
+        "FROM ${Transaction.tableName} "
+        "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = ${Transaction.tableName}.type_transaction_id "
+        "left join ${Bank.tableName} ON ${Bank.tableName}.id = ${Transaction.tableName}.bank_id "
+        "where ${Transaction.tableName}.transaction_id = $transactionId ");
+
+    return List.generate(result.length, (i) {
+      return _fromJsonQuery(result[i]);
+    });
+  }
+
+  Future<void> addTransactionsFromSubscriptions(List<Bank> banks) async {
+    for (var bank in banks) {
+      var subscriptions = await getSubscriptionsByBankId(bank);
+
+      for (var subscription in subscriptions) {
+        var transactions =
+            await getTransactionsLinkedToSubscription(subscription.id);
+
+        await _createTransactionsFromSubscription(subscription, transactions);
+      }
+    }
+  }
+
+  Future<void> addTransactionsFromSubscription(Transaction subscription) async {
+    var transactions =
+        await getTransactionsLinkedToSubscription(subscription.id);
+
+    await _createTransactionsFromSubscription(subscription, transactions);
+  }
+
+  Future<void> _createTransactionsFromSubscription(
+      Transaction subscription, List<Transaction> transactions) async {
+    var date = subscription.startSubscriptionDate;
+    var today = DateTime.now();
+
+    do {
+      var doTransactionExist = false;
+
+      for (var transaction in transactions) {
+        if (transaction.date.year == date.year &&
+            transaction.date.month == date.month &&
+            transaction.date.day == date.day) {
+          doTransactionExist = true;
+        }
+      }
+
+      if (!doTransactionExist) {
+        // Add a transaction
+        var newTransaction = Transaction(
+          title: subscription.title,
+          description: subscription.description,
+          price: subscription.price,
+          date: date,
+          typeTransaction: subscription.typeTransaction,
+          bank: subscription.bank,
+          transaction: subscription,
+        );
+
+        await save(newTransaction);
+
+        // Change the amount of the bank
+        // TODO: Get bank and the bank service
+//        var newBank = _bankProvider.selectedBank;
+//        newBank.money += newTransaction.price;
+//        await _bankService.update(newBank);
+      }
+
+      // Add the time to repeat
+      if (subscription.indexTypeRepeat == 0) {
+        date = date.add(Duration(days: subscription.nbDayRepeat));
+      } else if (subscription.indexTypeRepeat == 1) {
+        date = date.add(Duration(days: subscription.nbDayRepeat * 7));
+      } else if (subscription.indexTypeRepeat == 2) {
+        date = DateTime(
+            date.year, date.month + subscription.nbDayRepeat, date.day);
+      } else if (subscription.indexTypeRepeat == 3) {
+        date = DateTime(
+            date.year + subscription.nbDayRepeat, date.month, date.day);
+      }
+    } while (date.millisecondsSinceEpoch < today.millisecondsSinceEpoch);
+  }
+
+  Future<int> save(Transaction transaction) async {
+    return await addRow(Transaction.tableName, transaction.toMap());
   }
 
   Transaction _fromJsonQuery(dynamic json) {
     var date = DateTime.parse(json['date']);
+    var subscriptionDate;
+
+    if (json['start_subscription_date'] != null) {
+      subscriptionDate = DateTime.parse(json['start_subscription_date']);
+    }
 
     return Transaction(
       id: json['id'],
@@ -28,6 +143,9 @@ class TransactionService {
       description: json['description'],
       price: json['price'],
       date: date,
+      nbDayRepeat: json['nb_day_repeat'],
+      indexTypeRepeat: json['index_type_repeat'],
+      startSubscriptionDate: subscriptionDate,
       typeTransaction: TypeTransaction(
         id: json['tt_id'],
         title: json['tt_title'],
@@ -38,6 +156,9 @@ class TransactionService {
         id: json['bank_id'],
         currency: json['bank_currency'],
       ),
+      transaction: Transaction(
+        id: json['type_transaction_id'],
+      ),
     );
   }
 
@@ -47,11 +168,14 @@ class TransactionService {
         "SELECT ${Transaction.tableName}.id, ${Transaction.tableName}.title, ${Transaction.tableName}.description, "
         "${Transaction.tableName}.price, ${Transaction.tableName}.price, ${Transaction.tableName}.date, "
         "${TypeTransaction.tableName}.id as tt_id, ${TypeTransaction.tableName}.title as tt_title, ${TypeTransaction.tableName}.color as tt_color, "
-        "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency "
+        "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency, "
+        "${Transaction.tableName}.nb_day_repeat, ${Transaction.tableName}.index_type_repeat, ${Transaction.tableName}.start_subscription_date, "
+        "${Transaction.tableName}.transaction_id "
         "FROM ${Transaction.tableName} "
         "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = ${Transaction.tableName}.type_transaction_id "
         "left join ${Bank.tableName} ON ${Bank.tableName}.id = ${Transaction.tableName}.bank_id "
         "where ${Bank.tableName}.id = $bankId "
+        "and nb_day_repeat IS NULL "
         "and ${Transaction.tableName}.price < 0 "
         "and strftime('%m', ${Transaction.tableName}.date) = '${date.month < 10 ? "0${date.month}" : date.month}' "
         "and strftime('%Y', ${Transaction.tableName}.date) = '${date.year}' ");
@@ -66,11 +190,14 @@ class TransactionService {
         "SELECT ${Transaction.tableName}.id, ${Transaction.tableName}.title, ${Transaction.tableName}.description, "
         "${Transaction.tableName}.price, ${Transaction.tableName}.price, ${Transaction.tableName}.date, "
         "${TypeTransaction.tableName}.id as tt_id, ${TypeTransaction.tableName}.title as tt_title, ${TypeTransaction.tableName}.color as tt_color, "
-        "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency "
+        "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency, "
+        "${Transaction.tableName}.nb_day_repeat, ${Transaction.tableName}.index_type_repeat, ${Transaction.tableName}.start_subscription_date, "
+        "${Transaction.tableName}.transaction_id "
         "FROM ${Transaction.tableName} "
         "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = ${Transaction.tableName}.type_transaction_id "
         "left join ${Bank.tableName} ON ${Bank.tableName}.id = ${Transaction.tableName}.bank_id "
         "where ${Bank.tableName}.id = $bankId "
+        "and nb_day_repeat IS NULL "
         "order by ${Transaction.tableName}.date desc "
         "limit $pagination "
         "offset ${page * pagination}");

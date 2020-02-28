@@ -19,7 +19,7 @@ Future<Database> openCWDatabase() async {
           "CREATE TABLE ${TypeTransaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, color TEXT, icon_name TEXT) ");
 
       await db.execute(
-          "CREATE TABLE ${t.Transaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, description TEXT, price REAL, date DATETIME, nb_day_repeat INTEGER, index_type_repeat INTEGER, start_subscription_date DATETIME, bank_id INTEGER, type_transaction_id INTEGER, user_id INTEGER, FOREIGN KEY(bank_id) REFERENCES ${Bank.tableName}(id), FOREIGN KEY(type_transaction_id) REFERENCES ${TypeTransaction.tableName}(id), FOREIGN KEY(user_id) REFERENCES ${t.Transaction.tableName}(id)) ");
+          "CREATE TABLE ${t.Transaction.tableName}(id INTEGER PRIMARY KEY, title TEXT, description TEXT, price REAL, date DATETIME, nb_day_repeat INTEGER, index_type_repeat INTEGER, start_subscription_date DATETIME, bank_id INTEGER, type_transaction_id INTEGER, transaction_id INTEGER, FOREIGN KEY(bank_id) REFERENCES ${Bank.tableName}(id), FOREIGN KEY(type_transaction_id) REFERENCES ${TypeTransaction.tableName}(id), FOREIGN KEY(transaction_id) REFERENCES ${t.Transaction.tableName}(id)) ");
 
       // Insert basic type transactions
       await db.execute(
@@ -32,19 +32,24 @@ Future<Database> openCWDatabase() async {
 /// Add a [row] in the specified [tableName] in the database.
 /// A row should be an entity transformed into a map using the
 /// function called 'toMap()'.
-Future<void> addRow(String tableName, Map<String, dynamic> row) async {
+Future<int> addRow(String tableName, Map<String, dynamic> row) async {
   final Database db = await openCWDatabase();
 
   try {
-    await db.insert(
+    int insertedId = await db.insert(
       tableName,
       row,
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
     await db.close();
+
+    return insertedId;
   } catch (e) {
+    print(e);
     await db.close();
+
+    return -1;
   }
 }
 
@@ -60,6 +65,7 @@ Future<void> updateRow(String tableName, Map<String, dynamic> row) async {
 
     await db.close();
   } catch (e) {
+    print(e);
     await db.close();
   }
 }
@@ -74,6 +80,7 @@ Future<List<dynamic>> sqlQuery(String query) async {
 
     return result;
   } catch (e) {
+    print(e);
     await db.close();
 
     return List();
@@ -89,6 +96,7 @@ Future<List<dynamic>> getAllRows(String tableName) async {
     await db.close();
     return result;
   } catch (e) {
+    print(e);
     await db.close();
     return List();
   }

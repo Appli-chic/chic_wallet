@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
   BottomNavigationBar _displayBottomBar() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      backgroundColor: _themeProvider.backgroundColor,
+      backgroundColor: _themeProvider.secondBackgroundColor,
       elevation: 0,
       currentIndex: _index,
       onTap: _onTabClicked,

@@ -21,8 +21,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   _loadTransactions() async {
     if (_bankProvider.selectedBank != null) {
-      _bankProvider.setTransactions(await _transactionService
-          .getAllByBankIdPaged(_bankProvider.selectedBank.id, _page));
+      var transactions = await _transactionService
+          .getAllByBankIdPaged(_bankProvider.selectedBank.id, _page);
+      _bankProvider.setTransactions(transactions);
     }
   }
 
@@ -104,8 +105,9 @@ class _HomeScreenState extends State<HomeScreen>
         return true;
       },
       child: BankBody(
+        height: 310,
         child: Container(
-          margin: EdgeInsets.only(top: 450, left: 16, right: 16),
+          margin: EdgeInsets.only(top: 280, left: 16, right: 16),
           child: _displaysTransactions(),
         ),
         label: Container(

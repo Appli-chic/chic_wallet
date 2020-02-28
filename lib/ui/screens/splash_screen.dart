@@ -1,3 +1,4 @@
+import 'package:chic_wallet/models/db/bank.dart';
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/bank_service.dart';
@@ -25,18 +26,26 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     if (_transactionService == null) {
-      _transactionService =
-          Provider.of<TransactionService>(context);
+      _transactionService = Provider.of<TransactionService>(context);
     }
 
     if (_bankService == null) {
       _bankService = Provider.of<BankService>(context);
+      _loadData();
+    }
+  }
 
-      _loadAllBanks().then((_) async {
-        await _loadTransactions();
+  _loadData() async {
+    var banks = await _loadAllBanks();
+    await _addTransactionsFromSubscriptions(banks);
+    await _loadTransactions();
 
-        Navigator.pushReplacementNamed(context, '/');
-      });
+    Navigator.pushReplacementNamed(context, '/');
+  }
+
+  _addTransactionsFromSubscriptions(List<Bank> banks) async {
+    if (_bankProvider.selectedBank != null) {
+      await _transactionService.addTransactionsFromSubscriptions(banks);
     }
   }
 
@@ -47,13 +56,15 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  Future<void> _loadAllBanks() async {
+  Future<List<Bank>> _loadAllBanks() async {
     var banks = await _bankService.getAll();
     _bankProvider.setBanks(banks);
 
     if (_bankProvider.selectedBank == null && banks.isNotEmpty) {
       _bankProvider.selectBank(banks[0].id);
     }
+
+    return banks;
   }
 
   /// Displays Chic Wallet's logo in the top of this page
