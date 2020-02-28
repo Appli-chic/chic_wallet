@@ -140,14 +140,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       transaction.id = transactionId;
 
       var newBank = _bankProvider.selectedBank;
-      newBank.money += _paymentType == 0
-          ? -double.parse(_priceController.text)
-          : double.parse(_priceController.text);
-
-      if(transaction.startSubscriptionDate == null) {
+      if (transaction.startSubscriptionDate == null) {
+        newBank.money += _paymentType == 0
+            ? -double.parse(_priceController.text)
+            : double.parse(_priceController.text);
         await _bankService.update(newBank);
       } else {
-        _transactionService.addTransactionsFromSubscription(transaction);
+        var addedTransactions = await _transactionService
+            .addTransactionsFromSubscription(transaction);
+
+        for (var addedTransaction in addedTransactions) {
+          newBank.money += addedTransaction.price;
+          await _bankService.update(newBank);
+        }
       }
 
       _bankProvider.askReloadData();
@@ -369,7 +374,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                 hint: AppTranslations.of(context)
                                     .text("add_transaction_subscription_date"),
                                 onDateSelected: _onSubscriptionDateSelected,
-                                  dateFormatString: "MM/dd/yyyy",
+                                dateFormatString: "MM/dd/yyyy",
                               ),
                             )
                           : Container(),

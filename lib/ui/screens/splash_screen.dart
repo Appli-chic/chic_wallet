@@ -45,7 +45,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
   _addTransactionsFromSubscriptions(List<Bank> banks) async {
     if (_bankProvider.selectedBank != null) {
-      await _transactionService.addTransactionsFromSubscriptions(banks);
+      var transactionsAdded =
+          await _transactionService.addTransactionsFromSubscriptions(banks);
+
+      for (var transaction in transactionsAdded) {
+        var bank = _bankProvider.banks
+            .where((b) => b.id == transaction.bank.id)
+            .toList()[0];
+        bank.money += transaction.price;
+        await _bankService.update(bank);
+      }
     }
   }
 

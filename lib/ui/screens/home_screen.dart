@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen>
       );
     } else {
       return Container(
-        margin: EdgeInsets.only(top: 60),
+        margin: EdgeInsets.only(top: 45),
         child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,

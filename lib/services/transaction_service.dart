@@ -53,7 +53,9 @@ class TransactionService {
     });
   }
 
-  Future<void> addTransactionsFromSubscriptions(List<Bank> banks) async {
+  Future<List<Transaction>> addTransactionsFromSubscriptions(List<Bank> banks) async {
+    var transactionsAdded = List<Transaction>();
+
     for (var bank in banks) {
       var subscriptions = await getSubscriptionsByBankId(bank);
 
@@ -61,20 +63,24 @@ class TransactionService {
         var transactions =
             await getTransactionsLinkedToSubscription(subscription.id);
 
-        await _createTransactionsFromSubscription(subscription, transactions);
+        var result = await _createTransactionsFromSubscription(subscription, transactions);
+        transactionsAdded.addAll(result);
       }
     }
+
+    return transactionsAdded;
   }
 
-  Future<void> addTransactionsFromSubscription(Transaction subscription) async {
+  Future<List<Transaction>> addTransactionsFromSubscription(Transaction subscription) async {
     var transactions =
         await getTransactionsLinkedToSubscription(subscription.id);
 
-    await _createTransactionsFromSubscription(subscription, transactions);
+    return await _createTransactionsFromSubscription(subscription, transactions);
   }
 
-  Future<void> _createTransactionsFromSubscription(
+  Future<List<Transaction>> _createTransactionsFromSubscription(
       Transaction subscription, List<Transaction> transactions) async {
+    var transactionAdded = List<Transaction>();
     var date = subscription.startSubscriptionDate;
     var today = DateTime.now();
 
@@ -102,12 +108,7 @@ class TransactionService {
         );
 
         await save(newTransaction);
-
-        // Change the amount of the bank
-        // TODO: Get bank and the bank service
-//        var newBank = _bankProvider.selectedBank;
-//        newBank.money += newTransaction.price;
-//        await _bankService.update(newBank);
+        transactionAdded.add(newTransaction);
       }
 
       // Add the time to repeat
@@ -123,6 +124,8 @@ class TransactionService {
             date.year + subscription.nbDayRepeat, date.month, date.day);
       }
     } while (date.millisecondsSinceEpoch < today.millisecondsSinceEpoch);
+
+    return transactionAdded;
   }
 
   Future<int> save(Transaction transaction) async {
@@ -157,7 +160,7 @@ class TransactionService {
         currency: json['bank_currency'],
       ),
       transaction: Transaction(
-        id: json['type_transaction_id'],
+        id: json['transaction_id'],
       ),
     );
   }

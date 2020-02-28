@@ -62,10 +62,26 @@ class _TransactionCardState extends State<TransactionCard> {
                         height: 12,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: TypeTransaction.getColor(widget.transaction.typeTransaction.color),
+                          color: TypeTransaction.getColor(
+                              widget.transaction.typeTransaction.color),
                         ),
                       ),
                     ),
+                    widget.transaction.transaction.id != null
+                        ? Align(
+                            alignment: Alignment.topLeft,
+                            child: Container(
+                              margin: EdgeInsets.only(top: 4, left: 4),
+                              width: 12,
+                              height: 12,
+                              child: Icon(
+                                Icons.repeat,
+                                color: _themeProvider.textColor,
+                                size: 12,
+                              ),
+                            ),
+                          )
+                        : Container(),
                   ],
                 ),
               ),
