@@ -45,7 +45,7 @@
   "add_transaction_empty_bank": "Une banque doit être séléctionnée.",
   "add_transaction_empty_subscription_date": "Une date d'abonnement doit être sélectionnée.",
   "add_transaction_add_category": "+ Ajouter une catégorie",
-  "add_transaction_repeat_list":  [
+  "add_transaction_repeat_list": [
     "Jours",
     "Semaines",
     "Mois",
@@ -66,5 +66,8 @@
   "add_category_change_color": "Changer la couleur",
   "add_category_change_icon": "Changer d'icône",
   "add_category_empty_title": "Le titre ne doit pas être vide.",
-  "dialog_ok": "OK"
+  "dialog_ok": "OK",
+  "chart_screen_categories": "Catégories",
+  "chart_screen_evolution": "Évolution",
+  "chart_screen_subscriptions": "Abonnements"
 }

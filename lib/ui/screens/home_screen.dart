@@ -21,8 +21,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   _loadTransactions() async {
     if (_bankProvider.selectedBank != null) {
-      var transactions = await _transactionService
-          .getAllByBankIdPaged(_bankProvider.selectedBank.id, _page);
+      var transactions = await _transactionService.getAllByBankIdPaged(
+          _bankProvider.selectedBank.id, _page);
       _bankProvider.setTransactions(transactions);
     }
   }
@@ -111,7 +111,10 @@ class _HomeScreenState extends State<HomeScreen>
           child: _displaysTransactions(),
         ),
         label: Container(
-          margin: EdgeInsets.only(bottom: 40, left: 16),
+          margin: EdgeInsets.only(
+            bottom: _bankProvider.transactions.isNotEmpty ? 40 : 20,
+            left: 16,
+          ),
           child: Text(
             AppTranslations.of(context).text("home_screen_transactions"),
             style: TextStyle(

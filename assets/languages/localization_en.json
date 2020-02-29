@@ -66,5 +66,8 @@
   "add_category_change_color": "Change the color",
   "add_category_change_icon": "Change the icon",
   "add_category_empty_title": "The title must not be empty.",
-  "dialog_ok": "OK"
+  "dialog_ok": "OK",
+  "chart_screen_categories": "Categories",
+  "chart_screen_evolution": "Evolution",
+  "chart_screen_subscriptions": "Subscriptions"
 }

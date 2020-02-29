@@ -26,11 +26,13 @@ class _MainScreenState extends State<MainScreen> {
 
   /// Changes the displayed tab to the specified [index]
   _onTabClicked(int index) {
-    setState(() {
-      _index = index;
-    });
+    if (_index != index) {
+      setState(() {
+        _index = index;
+      });
 
-    _pageController.jumpToPage(_index);
+      _pageController.jumpToPage(_index);
+    }
   }
 
   /// Displays the bottom navigation bar

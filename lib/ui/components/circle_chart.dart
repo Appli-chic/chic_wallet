@@ -1,5 +1,4 @@
 import 'package:chic_wallet/localization/app_translations.dart';
-import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -18,7 +17,6 @@ class CircleChart extends StatefulWidget {
 class _CircleChartState extends State<CircleChart> {
   ThemeProvider _themeProvider;
   List<charts.Series> _seriesList;
-  BankProvider _bankProvider;
 
   _loadChartsData() {
     List<LinearTransactions> data = [];
@@ -91,7 +89,6 @@ class _CircleChartState extends State<CircleChart> {
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
-    _bankProvider = Provider.of<BankProvider>(context, listen: true);
     _loadChartsData();
 
     if (_seriesList.isEmpty) {

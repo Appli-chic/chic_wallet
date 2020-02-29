@@ -49,6 +49,12 @@ class BankProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  askReloadChartPage() {
+    _needToReloadChart = true;
+
+    notifyListeners();
+  }
+
   homePageReloaded() {
     _needToReloadHome = false;
   }
