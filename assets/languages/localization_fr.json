@@ -67,6 +67,8 @@
   "add_category_change_icon": "Changer d'icône",
   "add_category_empty_title": "Le titre ne doit pas être vide.",
   "dialog_ok": "OK",
+  "dialog_error": "Erreur",
+  "dialog_error_cant_delete_category_transactions_active": "Vous devez bouger vos transactions de cette catégorie vers une autre catégorie pour pouvoir la supprimer",
   "chart_screen_categories": "Catégories",
   "chart_screen_evolution": "Évolution",
   "chart_screen_subscriptions": "Abonnements"

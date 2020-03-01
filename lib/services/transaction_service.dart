@@ -233,6 +233,26 @@ class TransactionService {
     });
   }
 
+  Future<List<Transaction>> getAllByBankIdAndTypeTransactionId(int bankId, int typeTransactionId) async {
+    var result = await sqlQuery(
+        "SELECT ${Transaction.tableName}.id, ${Transaction.tableName}.title, ${Transaction.tableName}.description, "
+            "${Transaction.tableName}.price, ${Transaction.tableName}.price, ${Transaction.tableName}.date, "
+            "${TypeTransaction.tableName}.id as tt_id, ${TypeTransaction.tableName}.title as tt_title, ${TypeTransaction.tableName}.color as tt_color, "
+            "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency, "
+            "${Transaction.tableName}.nb_day_repeat, ${Transaction.tableName}.index_type_repeat, ${Transaction.tableName}.start_subscription_date, "
+            "${Transaction.tableName}.transaction_id "
+            "FROM ${Transaction.tableName} "
+            "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = ${Transaction.tableName}.type_transaction_id "
+            "left join ${Bank.tableName} ON ${Bank.tableName}.id = ${Transaction.tableName}.bank_id "
+            "where ${Bank.tableName}.id = $bankId "
+            "and tt_id = $typeTransactionId "
+            "order by ${Transaction.tableName}.date asc ");
+
+    return List.generate(result.length, (i) {
+      return _fromJsonQuery(result[i]);
+    });
+  }
+
   Future<List<Transaction>> getAllByBankId(int bankId) async {
     var result = await sqlQuery(
         "SELECT ${Transaction.tableName}.id, ${Transaction.tableName}.title, ${Transaction.tableName}.description, "

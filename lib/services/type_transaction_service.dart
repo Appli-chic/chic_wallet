@@ -11,6 +11,11 @@ class TypeTransactionService {
     this.env,
   });
 
+  Future<void> delete(TypeTransaction typeTransaction) async {
+    await sqlQuery(
+        "DELETE FROM ${TypeTransaction.tableName} WHERE ${TypeTransaction.tableName}.id = ${typeTransaction.id}");
+  }
+
   Future<void> save(TypeTransaction typeTransaction) async {
     await addRow(TypeTransaction.tableName, typeTransaction.toMap());
   }
