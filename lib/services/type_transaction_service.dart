@@ -16,6 +16,12 @@ class TypeTransactionService {
         "DELETE FROM ${TypeTransaction.tableName} WHERE ${TypeTransaction.tableName}.id = ${typeTransaction.id}");
   }
 
+  Future<void> update(TypeTransaction typeTransaction) async {
+    await sqlQuery("UPDATE ${TypeTransaction.tableName} "
+        "SET title = '${typeTransaction.title}', color = '${typeTransaction.color}', icon_name = '${typeTransaction.iconName}' "
+        "WHERE ${TypeTransaction.tableName}.id = ${typeTransaction.id}");
+  }
+
   Future<void> save(TypeTransaction typeTransaction) async {
     await addRow(TypeTransaction.tableName, typeTransaction.toMap());
   }

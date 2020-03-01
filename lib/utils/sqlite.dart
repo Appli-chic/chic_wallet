@@ -60,7 +60,7 @@ Future<void> updateRow(String tableName, Map<String, dynamic> row) async {
     await db.update(
       tableName,
       row,
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm: ConflictAlgorithm.abort,
     );
 
     await db.close();

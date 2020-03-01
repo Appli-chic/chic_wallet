@@ -1,3 +1,4 @@
+import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/ui/screens/chart_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   ThemeProvider _themeProvider;
+  BankProvider _bankProvider;
 
   PreloadPageController _pageController = PreloadPageController();
   int _index = 0;
@@ -89,6 +91,7 @@ class _MainScreenState extends State<MainScreen> {
           elevation: 0,
           onPressed: () async {
             await Navigator.pushNamed(context, '/add_transaction_screen');
+            _bankProvider.askReloadData();
           },
           child: Container(
             height: 70,
@@ -108,6 +111,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+    _bankProvider = Provider.of<BankProvider>(context, listen: true);
 
     return Scaffold(
       backgroundColor: _themeProvider.secondBackgroundColor,

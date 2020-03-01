@@ -27,14 +27,43 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
   Color _pickerColor = Color(0xfff44336);
   IconData _icon = Icons.shopping_cart;
   List<String> _errorList = [];
+  TypeTransaction _typeTransaction;
+  bool _updateInfoSet = false;
 
   didChangeDependencies() {
     super.didChangeDependencies();
 
     if (_typeTransactionService == null) {
-      _typeTransactionService =
-          Provider.of<TypeTransactionService>(context);
+      _typeTransactionService = Provider.of<TypeTransactionService>(context);
     }
+  }
+
+  _edit() async {
+    bool isValid = true;
+    List<String> errorList = [];
+
+    // Check the title
+    if (_titleController.text.isEmpty) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_category_empty_title"));
+    }
+
+    if (isValid) {
+      _typeTransaction.title = _titleController.text;
+      _typeTransaction.color = TypeTransaction.colorToString(_pickerColor);
+      _typeTransaction.iconName = iconDataToString(_icon);
+
+      await _typeTransactionService.update(_typeTransaction);
+      Navigator.pop(context);
+    }
+
+    setState(() {
+      _errorList = errorList;
+    });
+
+    // Hide the keyboard
+    FocusScope.of(context).requestFocus(FocusNode());
   }
 
   _save() async {
@@ -137,11 +166,23 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
     }
   }
 
+  _setDataInInputs() {
+    _titleController.text = _typeTransaction.title;
+    _pickerColor = TypeTransaction.getColor(_typeTransaction.color);
+    _icon = TypeTransaction.getIconData(_typeTransaction.iconName);
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+    _typeTransaction = ModalRoute.of(context).settings.arguments;
     final size = MediaQuery.of(context).size;
+
+    if (_typeTransaction != null && !_updateInfoSet) {
+      _updateInfoSet = true;
+      _setDataInInputs();
+    }
 
     return Scaffold(
       backgroundColor: _themeProvider.secondBackgroundColor,
@@ -268,10 +309,14 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                   padding: const EdgeInsets.only(
                       left: 16, right: 16, bottom: 16, top: 16),
                   child: RoundedButton(
-                    onClick: _save,
-                    text: AppTranslations.of(context)
-                        .text("add_category_save")
-                        .toUpperCase(),
+                    onClick: _typeTransaction == null ? _save : _edit,
+                    text: _typeTransaction == null
+                        ? AppTranslations.of(context)
+                            .text("add_category_save")
+                            .toUpperCase()
+                        : AppTranslations.of(context)
+                            .text("add_category_edit")
+                            .toUpperCase(),
                   ),
                 ),
               ],

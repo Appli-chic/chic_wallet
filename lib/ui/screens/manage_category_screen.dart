@@ -121,7 +121,14 @@ class _ManageCategoryScreenState extends State<ManageCategoryScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await Navigator.pushNamed(
+                          context,
+                          '/add_category',
+                          arguments: _typeTransactionsList[index],
+                        );
+                        _loadAllTypeTransactions();
+                      },
                       icon: Icon(
                         Icons.edit,
                         color: _themeProvider.textColor,
