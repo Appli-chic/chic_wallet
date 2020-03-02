@@ -62,8 +62,15 @@ class _BankBodyState extends State<BankBody> {
         enableInfiniteScroll: false,
         items: _bankProvider.banks.map((bank) {
           return Builder(builder: (BuildContext context) {
-            return BankCard(
-              bank: bank,
+            return GestureDetector(
+              onTap: () async {
+                await Navigator.pushNamed(context, '/add_bank_screen',
+                    arguments: bank);
+                await _loadAllBanks();
+              },
+              child: BankCard(
+                bank: bank,
+              ),
             );
           });
         }).toList(),

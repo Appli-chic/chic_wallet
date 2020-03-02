@@ -38,6 +38,9 @@ class TextFieldUnderline extends StatefulWidget {
   final Function(int, String, int, String) onMultipleSelectChose;
   final Function() onDeletePressed;
   final String dateFormatString;
+  final DateTime defaultDate;
+  final int singleSelectDefaultIndex;
+  final Function singleSelectChoose;
 
   TextFieldUnderline({
     @required this.controller,
@@ -54,7 +57,10 @@ class TextFieldUnderline extends StatefulWidget {
     this.listFields2 = const [],
     this.onMultipleSelectChose,
     this.onDeletePressed,
+    this.defaultDate,
     this.dateFormatString = "MM/yy",
+    this.singleSelectDefaultIndex = 0,
+    this.singleSelectChoose,
   });
 
   @override
@@ -70,12 +76,16 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
   bool _isNotClickable = false;
 
   _onSelectInputClicked() async {
-    showCupertinoModalPopup(
+    FixedExtentScrollController scrollController = FixedExtentScrollController(
+        initialItem: widget.singleSelectDefaultIndex);
+
+    await showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
         return Container(
           height: 200,
           child: CupertinoPicker(
+            scrollController: scrollController,
             backgroundColor: _themeProvider.backgroundColor,
             itemExtent: 30,
             onSelectedItemChanged: (int index) {
@@ -96,6 +106,8 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
         );
       },
     );
+
+    widget.singleSelectChoose();
   }
 
   _onMultipleSelectInputClicked() async {
@@ -179,7 +191,8 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
   _onDateInputClicked() async {
     DateTime selectedDate = await showRoundedDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate:
+          widget.defaultDate != null ? widget.defaultDate : DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       borderRadius: 16,

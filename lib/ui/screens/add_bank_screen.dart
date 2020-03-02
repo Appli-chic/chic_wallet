@@ -10,6 +10,7 @@ import 'package:chic_wallet/ui/components/rounded_button.dart';
 import 'package:chic_wallet/ui/components/text_field_underline.dart';
 import 'package:chic_wallet/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddBankScreen extends StatefulWidget {
@@ -33,7 +34,9 @@ class _AddBankScreenState extends State<AddBankScreen> {
   TextEditingController _currencyController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
 
+  Bank _bank;
   bool _isLoading = false;
+  bool _updateInfoSet = false;
   List<String> _errorList = [];
 
   /// When the bank name is submitted we focus the card holder name field
@@ -50,6 +53,81 @@ class _AddBankScreenState extends State<AddBankScreen> {
     setState(() {
       _validityDate = date;
     });
+  }
+
+  _edit() async {
+    if (!_isLoading) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      bool isValid = true;
+      List<String> errorList = [];
+
+      // Check the bank name
+      if (_bankNameController.text.isEmpty) {
+        isValid = false;
+        errorList.add(
+            AppTranslations.of(context).text("add_bank_error_no_bank_name"));
+      }
+
+      // Check the cardholder name
+      if (_cardholderNameController.text.isEmpty) {
+        isValid = false;
+        errorList.add(AppTranslations.of(context)
+            .text("add_bank_error_no_cardholder_name"));
+      }
+
+      // Check the money is set
+      if (_priceController.text.isEmpty) {
+        isValid = false;
+        errorList
+            .add(AppTranslations.of(context).text("add_bank_error_no_money"));
+      }
+
+      // Check the validity date
+      if (_validityDateController.text.isEmpty) {
+        isValid = false;
+        errorList.add(AppTranslations.of(context)
+            .text("add_bank_error_no_validity_date"));
+      }
+
+      if (isValid) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        try {
+          var newBank = Bank(
+            id: _bank.id,
+            bankName: _bankNameController.text,
+            username: _cardholderNameController.text,
+            money: double.parse(_priceController.text),
+            cardType: _cardTypeController.text,
+            expirationDate: _validityDate,
+            currency: _currencyController.text,
+          );
+
+          await _bankService.update(newBank);
+        } catch (e) {
+          return null;
+        }
+
+        _bankProvider.askReloadData();
+        Navigator.pop(context);
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+
+      setState(() {
+        _errorList = errorList;
+      });
+
+      // Hide the keyboard
+      FocusScope.of(context).requestFocus(FocusNode());
+    }
   }
 
   _save() async {
@@ -78,8 +156,8 @@ class _AddBankScreenState extends State<AddBankScreen> {
       // Check the money is set
       if (_priceController.text.isEmpty) {
         isValid = false;
-        errorList.add(AppTranslations.of(context)
-            .text("add_bank_error_no_money"));
+        errorList
+            .add(AppTranslations.of(context).text("add_bank_error_no_money"));
       }
 
       // Check the validity date
@@ -147,12 +225,31 @@ class _AddBankScreenState extends State<AddBankScreen> {
     }
   }
 
+  _setDataInInputs() {
+    var dateFormatter = DateFormat("MM/yy");
+    String dateString = dateFormatter.format(_bank.expirationDate);
+
+    _bankNameController.text = _bank.bankName;
+    _cardholderNameController.text = _bank.username;
+    _priceController.text = _bank.money.toString();
+    _validityDate = _bank.expirationDate;
+    _validityDateController.text = dateString;
+    _cardTypeController.text = _bank.cardType;
+    _currencyController.text = _bank.currency;
+  }
+
   @override
   Widget build(BuildContext context) {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
     _bankProvider = Provider.of<BankProvider>(context, listen: true);
     _bankService = Provider.of<BankService>(context);
+    _bank = ModalRoute.of(context).settings.arguments;
     final size = MediaQuery.of(context).size;
+
+    if (_bank != null && !_updateInfoSet) {
+      _updateInfoSet = true;
+      _setDataInInputs();
+    }
 
     return Scaffold(
       backgroundColor: _themeProvider.secondBackgroundColor,
@@ -182,7 +279,11 @@ class _AddBankScreenState extends State<AddBankScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: Center(
                           child: Text(
-                            AppTranslations.of(context).text("add_bank_title"),
+                            _bank != null
+                                ? AppTranslations.of(context)
+                                    .text("add_bank_title_edit")
+                                : AppTranslations.of(context)
+                                    .text("add_bank_title"),
                             style: TextStyle(
                               color: _themeProvider.textColor,
                               fontSize: 24,
@@ -215,7 +316,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
                           controller: _priceController,
                           focus: _priceFocus,
                           inputType:
-                          TextInputType.numberWithOptions(decimal: true),
+                              TextInputType.numberWithOptions(decimal: true),
                           textInputAction: TextInputAction.done,
                           hint: AppTranslations.of(context)
                               .text("add_bank_money"),
@@ -226,6 +327,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
                         child: TextFieldUnderline(
                           controller: _validityDateController,
                           fieldType: TextFieldType.date,
+                          defaultDate: _validityDate,
                           hint: AppTranslations.of(context)
                               .text("add_bank_validity_date"),
                           onDateSelected: _onValidityDateSelected,
@@ -238,7 +340,12 @@ class _AddBankScreenState extends State<AddBankScreen> {
                           fieldType: TextFieldType.select,
                           hint: AppTranslations.of(context)
                               .text("add_bank_card_type"),
+                          singleSelectDefaultIndex:
+                              LIST_CARD_TYPES.indexOf(_cardTypeController.text),
                           listFields: LIST_CARD_TYPES,
+                          singleSelectChoose: () {
+                            setState(() {});
+                          },
                         ),
                       ),
                       Padding(
@@ -248,7 +355,12 @@ class _AddBankScreenState extends State<AddBankScreen> {
                           fieldType: TextFieldType.select,
                           hint: AppTranslations.of(context)
                               .text("add_bank_currency"),
+                          singleSelectDefaultIndex: LIST_CURRENCIES_NAMES
+                              .indexOf(_currencyController.text),
                           listFields: LIST_CURRENCIES_NAMES,
+                          singleSelectChoose: () {
+                            setState(() {});
+                          },
                         ),
                       ),
                       _displayError(),
@@ -258,10 +370,14 @@ class _AddBankScreenState extends State<AddBankScreen> {
                     padding: const EdgeInsets.only(
                         left: 16, right: 16, bottom: 16, top: 16),
                     child: RoundedButton(
-                      onClick: _save,
-                      text: AppTranslations.of(context)
-                          .text("add_bank_save")
-                          .toUpperCase(),
+                      onClick: _bank != null ? _edit : _save,
+                      text: _bank != null
+                          ? AppTranslations.of(context)
+                              .text("add_bank_update")
+                              .toUpperCase()
+                          : AppTranslations.of(context)
+                              .text("add_bank_save")
+                              .toUpperCase(),
                     ),
                   ),
                 ],

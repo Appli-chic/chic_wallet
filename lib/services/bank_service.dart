@@ -2,6 +2,7 @@ import 'package:chic_wallet/models/db/bank.dart';
 import 'package:chic_wallet/models/env.dart';
 import 'package:chic_wallet/utils/sqlite.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 
 class BankService {
   Client client = Client();
@@ -16,7 +17,14 @@ class BankService {
   }
 
   Future<void> update(Bank bank) async {
-    await updateRow(Bank.tableName, bank.toMap());
+    var dateFormatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
+    String expirationDateString = dateFormatter.format(bank.expirationDate);
+
+    await sqlQuery("UPDATE ${Bank.tableName} "
+        "SET bank_name = '${bank.bankName}', username = '${bank.username}', "
+        "money = ${bank.money}, card_type = '${bank.cardType}', "
+        "expiration_date = '$expirationDateString', currency = '${bank.currency}' "
+        "WHERE ${Bank.tableName}.id = ${bank.id} ");
   }
 
   Future<List<Bank>> getAll() async {
