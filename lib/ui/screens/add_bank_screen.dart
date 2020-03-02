@@ -3,9 +3,11 @@ import 'package:chic_wallet/models/db/bank.dart';
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/bank_service.dart';
+import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/ui/components/app_bar_image.dart';
 import 'package:chic_wallet/ui/components/error_form.dart';
 import 'package:chic_wallet/ui/components/loading_dialog.dart';
+import 'package:chic_wallet/ui/components/message_dialog.dart';
 import 'package:chic_wallet/ui/components/rounded_button.dart';
 import 'package:chic_wallet/ui/components/text_field_underline.dart';
 import 'package:chic_wallet/utils/constants.dart';
@@ -21,6 +23,7 @@ class AddBankScreen extends StatefulWidget {
 class _AddBankScreenState extends State<AddBankScreen> {
   ThemeProvider _themeProvider;
   BankService _bankService;
+  TransactionService _transactionService;
   BankProvider _bankProvider;
 
   DateTime _validityDate;
@@ -53,6 +56,64 @@ class _AddBankScreenState extends State<AddBankScreen> {
     setState(() {
       _validityDate = date;
     });
+  }
+
+  _delete() async {
+    await MessageDialog.display(
+      context,
+      backgroundColor: _themeProvider.backgroundColor,
+      title: Text(
+        AppTranslations.of(context).text("dialog_warning"),
+        style: TextStyle(
+          color: _themeProvider.textColor,
+        ),
+      ),
+      body: Text(
+        AppTranslations.of(context).text("dialog_warning_delete_bank"),
+        style: TextStyle(
+          color: _themeProvider.textColor,
+        ),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text(
+            AppTranslations.of(context).text("dialog_no"),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        FlatButton(
+          child: Text(
+            AppTranslations.of(context).text("dialog_yes"),
+            style: TextStyle(
+              color: Colors.red,
+            ),
+          ),
+          onPressed: () async {
+            // Delete the transactions
+            var transactions =
+                await _transactionService.getAllByBankId(_bank.id);
+            for (var transaction in transactions) {
+              await _transactionService.delete(transaction);
+            }
+
+            // Delete the subscriptions
+            var subscriptions =
+                await _transactionService.getSubscriptionsByBankId(_bank);
+            for (var subscription in subscriptions) {
+              await _transactionService.delete(subscription);
+            }
+
+            // Delete the bank account
+            await _bankService.delete(_bank);
+
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
   }
 
   _edit() async {
@@ -243,6 +304,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
     _bankProvider = Provider.of<BankProvider>(context, listen: true);
     _bankService = Provider.of<BankService>(context);
+    _transactionService = Provider.of<TransactionService>(context);
     _bank = ModalRoute.of(context).settings.arguments;
     final size = MediaQuery.of(context).size;
 
@@ -380,6 +442,19 @@ class _AddBankScreenState extends State<AddBankScreen> {
                               .toUpperCase(),
                     ),
                   ),
+                  _bank != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, bottom: 16, top: 8),
+                          child: RoundedButton(
+                            onClick: _delete,
+                            color: Colors.red,
+                            text: AppTranslations.of(context)
+                                .text("add_bank_delete")
+                                .toUpperCase(),
+                          ),
+                        )
+                      : Container(),
                 ],
               ),
             ),

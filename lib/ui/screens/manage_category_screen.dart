@@ -4,7 +4,7 @@ import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/services/type_transaction_service.dart';
-import 'package:chic_wallet/ui/components/icon_picker/message_dialog.dart';
+import 'package:chic_wallet/ui/components/message_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

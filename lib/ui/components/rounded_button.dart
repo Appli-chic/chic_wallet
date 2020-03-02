@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 class RoundedButton extends StatefulWidget {
   final Function onClick;
   final String text;
+  final Color color;
 
   RoundedButton({
     @required this.onClick,
     @required this.text,
+    this.color,
   });
 
   @override
@@ -28,13 +30,16 @@ class _RoundedButtonState extends State<RoundedButton> {
       padding: const EdgeInsets.all(0.0),
       child: Ink(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: <Color>[
-              _themeProvider.firstColor,
-              _themeProvider.secondColor,
-              _themeProvider.thirdColor
-            ],
-          ),
+          gradient: widget.color == null
+              ? LinearGradient(
+                  colors: <Color>[
+                    _themeProvider.firstColor,
+                    _themeProvider.secondColor,
+                    _themeProvider.thirdColor
+                  ],
+                )
+              : null,
+          color: widget.color != null ? widget.color : null,
           borderRadius: BorderRadius.all(Radius.circular(80.0)),
         ),
         child: Container(

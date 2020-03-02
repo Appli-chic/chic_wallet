@@ -8,11 +8,13 @@ import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/services/type_transaction_service.dart';
 import 'package:chic_wallet/ui/components/bank_body.dart';
 import 'package:chic_wallet/ui/components/error_form.dart';
+import 'package:chic_wallet/ui/components/message_dialog.dart';
 import 'package:chic_wallet/ui/components/rounded_button.dart';
 import 'package:chic_wallet/ui/components/text_field_underline.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddTransactionScreen extends StatefulWidget {
@@ -47,6 +49,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   int _nbRepeat = -1;
   DateTime _subscriptionDate;
 
+  bool _updateInfoSet = false;
+  Transaction _transaction;
+
   didChangeDependencies() {
     super.didChangeDependencies();
 
@@ -65,7 +70,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       typeTransactionString.add(tt.title);
     });
 
-    _categoryController.text = typeTransactionString[0];
+    if (_categoryController.text.isEmpty) {
+      _categoryController.text = typeTransactionString[0];
+    }
 
     setState(() {
       _typeTransactionsTextList = typeTransactionString;
@@ -84,6 +91,138 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   _onDescriptionSubmitted(String text) {
     FocusScope.of(context).requestFocus(_priceFocus);
+  }
+
+  _delete() async {
+    if (_transaction.startSubscriptionDate == null) {
+      await MessageDialog.display(
+        context,
+        backgroundColor: _themeProvider.backgroundColor,
+        title: Text(
+          AppTranslations.of(context).text("dialog_warning"),
+          style: TextStyle(
+            color: _themeProvider.textColor,
+          ),
+        ),
+        body: Text(
+          AppTranslations.of(context).text("dialog_warning_delete_transaction"),
+          style: TextStyle(
+            color: _themeProvider.textColor,
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text(
+              AppTranslations.of(context).text("dialog_no"),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text(
+              AppTranslations.of(context).text("dialog_yes"),
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+            onPressed: () async {
+              var newBank = _bankProvider.selectedBank;
+              newBank.money -= _transaction.price;
+              await _bankService.update(newBank);
+
+              await _transactionService.delete(_transaction);
+
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    }
+  }
+
+  _update() async {
+    bool isValid = true;
+    List<String> errorList = [];
+
+    // Check the title
+    if (_titleController.text.isEmpty) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_transaction_empty_title"));
+    }
+
+    // Check the price
+    if (_priceController.text.isEmpty) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_transaction_empty_price"));
+    }
+
+    // Check the bank
+    if (_bankProvider.banks.isEmpty) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_transaction_empty_bank"));
+    }
+
+    if (_repeatController.text.isNotEmpty && _subscriptionDate == null) {
+      isValid = false;
+      errorList.add(AppTranslations.of(context)
+          .text("add_transaction_empty_subscription_date"));
+    }
+
+    if (isValid) {
+      var category = _typeTransactionsList
+          .where((tt) => tt.title == _categoryController.text)
+          .toList()[0];
+      var typeTransactionIndex = _typeTransactionsList.indexOf(category);
+      var transaction = Transaction(
+        id: _transaction.id,
+        title: _titleController.text,
+        description: _descriptionController.text,
+        price: _paymentType == 0
+            ? -double.parse(_priceController.text)
+            : double.parse(_priceController.text),
+        date: DateTime.now(),
+        typeTransaction: _typeTransactionsList[typeTransactionIndex],
+        bank: _bankProvider.selectedBank,
+        nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
+        indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
+        startSubscriptionDate: _subscriptionDate,
+      );
+
+      var newBank = _bankProvider.selectedBank;
+      if (transaction.startSubscriptionDate == null) {
+        await _transactionService.update(transaction);
+
+        newBank.money -= _transaction.price;
+        newBank.money += _paymentType == 0
+            ? -double.parse(_priceController.text)
+            : double.parse(_priceController.text);
+        await _bankService.update(newBank);
+      } else {
+        // Manage subscription money
+//        var addedTransactions = await _transactionService
+//            .addTransactionsFromSubscription(transaction);
+//
+//        for (var addedTransaction in addedTransactions) {
+//          newBank.money += addedTransaction.price;
+//          await _bankService.update(newBank);
+//        }
+      }
+
+      _bankProvider.askReloadData();
+      Navigator.pop(context);
+    }
+
+    setState(() {
+      _errorList = errorList;
+    });
+
+    // Hide the keyboard
+    FocusScope.of(context).requestFocus(FocusNode());
   }
 
   _addTransaction() async {
@@ -235,6 +374,33 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     setState(() {});
   }
 
+  _setDataInInputs() {
+    _titleController.text = _transaction.title;
+    _descriptionController.text = _transaction.description;
+    _priceController.text = _transaction.price.abs().toStringAsFixed(2);
+    _categoryController.text = _transaction.typeTransaction.title;
+
+    if (_transaction.transaction.id != null) {
+      // Add the subscription information
+      _onMultipleSelectChose(
+          _transaction.transaction.nbDayRepeat - 1,
+          _transaction.transaction.nbDayRepeat.toString(),
+          _transaction.transaction.indexTypeRepeat,
+          AppTranslations.of(context).list("add_transaction_repeat_list")[
+              _transaction.transaction.indexTypeRepeat]);
+
+      var dateFormatter = DateFormat("MM/dd/yyyy");
+      String dateString =
+          dateFormatter.format(_transaction.transaction.startSubscriptionDate);
+      _repeatDateController.text = dateString;
+      _subscriptionDate = _transaction.transaction.startSubscriptionDate;
+    }
+
+    if (_transaction.price >= 0) {
+      _paymentType = 1;
+    }
+  }
+
   @override
   void initState() {
     for (var i = 1; i != 366; i++) {
@@ -251,8 +417,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     _bankProvider = Provider.of<BankProvider>(context, listen: true);
     _transactionService = Provider.of<TransactionService>(context);
     _bankService = Provider.of<BankService>(context);
+    _transaction = ModalRoute.of(context).settings.arguments;
 
     final size = MediaQuery.of(context).size;
+
+    if (_transaction != null && !_updateInfoSet) {
+      _updateInfoSet = true;
+      _setDataInInputs();
+    }
 
     return Scaffold(
       backgroundColor: _themeProvider.secondBackgroundColor,
@@ -280,8 +452,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         padding: const EdgeInsets.only(bottom: 16),
                         child: Center(
                           child: Text(
-                            AppTranslations.of(context)
-                                .text("add_transaction_screen_title"),
+                            _transaction != null
+                                ? AppTranslations.of(context)
+                                    .text("add_transaction_screen_title_edit")
+                                : AppTranslations.of(context)
+                                    .text("add_transaction_screen_title"),
                             style: TextStyle(
                               color: _themeProvider.textColor,
                               fontSize: 24,
@@ -353,7 +528,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           listFields: _numberDayInYearList,
                           listFields2: AppTranslations.of(context)
                               .list("add_transaction_repeat_list"),
+                          multiSelectDefaultIndex1: _nbRepeat - 1,
+                          multiSelectDefaultIndex2: _indexRepeat,
                           onMultipleSelectChose: _onMultipleSelectChose,
+                          multiSelectChoose: () {
+                            setState(() {});
+                          },
                           onDeletePressed: () {
                             _repeatController.text = "";
                             _indexRepeat = -1;
@@ -374,6 +554,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                 hint: AppTranslations.of(context)
                                     .text("add_transaction_subscription_date"),
                                 onDateSelected: _onSubscriptionDateSelected,
+                                defaultDate: _subscriptionDate,
                                 dateFormatString: "MM/dd/yyyy",
                               ),
                             )
@@ -384,6 +565,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           controller: _categoryController,
                           fieldType: TextFieldType.select,
                           listFields: _typeTransactionsTextList,
+                          singleSelectDefaultIndex: _typeTransactionsTextList
+                              .indexOf(_categoryController.text),
+                          singleSelectChoose: () {
+                            setState(() {});
+                          },
                           hint: AppTranslations.of(context)
                               .text("add_transaction_type"),
                         ),
@@ -416,12 +602,29 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     padding: const EdgeInsets.only(
                         bottom: 16, left: 16, right: 16, top: 16),
                     child: RoundedButton(
-                      onClick: _addTransaction,
-                      text: AppTranslations.of(context)
-                          .text("add_transaction_add")
-                          .toUpperCase(),
+                      onClick: _transaction != null ? _update : _addTransaction,
+                      text: _transaction != null
+                          ? AppTranslations.of(context)
+                              .text("add_transaction_edit")
+                              .toUpperCase()
+                          : AppTranslations.of(context)
+                              .text("add_transaction_add")
+                              .toUpperCase(),
                     ),
                   ),
+                  _transaction != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, bottom: 16, top: 8),
+                          child: RoundedButton(
+                            onClick: _delete,
+                            color: Colors.red,
+                            text: AppTranslations.of(context)
+                                .text("add_transaction_delete")
+                                .toUpperCase(),
+                          ),
+                        )
+                      : Container(),
                 ],
               ),
             ),

@@ -67,6 +67,7 @@ class _BankBodyState extends State<BankBody> {
                 await Navigator.pushNamed(context, '/add_bank_screen',
                     arguments: bank);
                 await _loadAllBanks();
+                _bankProvider.askReloadData(didBankCardChanged: true);
               },
               child: BankCard(
                 bank: bank,

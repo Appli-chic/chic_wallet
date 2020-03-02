@@ -40,7 +40,10 @@ class TextFieldUnderline extends StatefulWidget {
   final String dateFormatString;
   final DateTime defaultDate;
   final int singleSelectDefaultIndex;
+  final int multiSelectDefaultIndex1;
+  final int multiSelectDefaultIndex2;
   final Function singleSelectChoose;
+  final Function multiSelectChoose;
 
   TextFieldUnderline({
     @required this.controller,
@@ -61,6 +64,9 @@ class TextFieldUnderline extends StatefulWidget {
     this.dateFormatString = "MM/yy",
     this.singleSelectDefaultIndex = 0,
     this.singleSelectChoose,
+    this.multiSelectDefaultIndex1 = 0,
+    this.multiSelectDefaultIndex2 = 0,
+    this.multiSelectChoose,
   });
 
   @override
@@ -122,7 +128,15 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
           _secondPickerIndex, _secondPickerResult);
     }
 
-    showCupertinoModalPopup(
+    FixedExtentScrollController firstScrollController =
+        FixedExtentScrollController(
+            initialItem: widget.multiSelectDefaultIndex1);
+
+    FixedExtentScrollController secondScrollController =
+        FixedExtentScrollController(
+            initialItem: widget.multiSelectDefaultIndex2);
+
+    await showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
         return Container(
@@ -131,6 +145,7 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
             children: <Widget>[
               Expanded(
                 child: CupertinoPicker(
+                  scrollController: firstScrollController,
                   backgroundColor: _themeProvider.backgroundColor,
                   itemExtent: 30,
                   onSelectedItemChanged: (int index) {
@@ -158,6 +173,7 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
               Expanded(
                 child: CupertinoPicker(
                   backgroundColor: _themeProvider.backgroundColor,
+                  scrollController: secondScrollController,
                   itemExtent: 30,
                   onSelectedItemChanged: (int index) {
                     _secondPickerResult = widget.listFields[index];
@@ -186,6 +202,8 @@ class _TextFieldUnderlineState extends State<TextFieldUnderline> {
         );
       },
     );
+
+    widget.multiSelectChoose();
   }
 
   _onDateInputClicked() async {

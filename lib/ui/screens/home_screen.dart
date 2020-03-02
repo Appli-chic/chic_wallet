@@ -97,7 +97,8 @@ class _HomeScreenState extends State<HomeScreen>
 
     return NotificationListener(
       onNotification: (ScrollNotification scrollInfo) {
-        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+            _bankProvider.transactions.isNotEmpty) {
           _page++;
           _loadMoreTransactions();
         }

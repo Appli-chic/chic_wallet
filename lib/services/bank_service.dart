@@ -12,6 +12,11 @@ class BankService {
     this.env,
   });
 
+  Future<void> delete(Bank bank) async {
+    await sqlQuery(
+        "DELETE FROM ${Bank.tableName} WHERE ${Bank.tableName}.id = ${bank.id}");
+  }
+
   Future<void> save(Bank bank) async {
     await addRow(Bank.tableName, bank.toMap());
   }
