@@ -1,6 +1,8 @@
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/ui/screens/chart_screen.dart';
+import 'package:chic_wallet/ui/screens/settings_screen.dart';
+import 'package:chic_wallet/ui/screens/user_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:preload_page_view/preload_page_view.dart';
@@ -125,8 +127,8 @@ class _MainScreenState extends State<MainScreen> {
           HomeScreen(),
           ChartScreen(),
           Container(),
-          Container(color: Colors.yellow),
-          Container(color: Colors.blue),
+          UserScreen(),
+          SettingsScreen(),
         ],
       ),
     );

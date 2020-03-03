@@ -88,5 +88,8 @@
   "dialog_error_cant_delete_category_transactions_active": "You should move first the transactions to another category before to be able to delete it.",
   "chart_screen_categories": "Categories",
   "chart_screen_evolution": "Evolution",
-  "chart_screen_subscriptions": "Subscriptions"
+  "chart_screen_subscriptions": "Subscriptions",
+  "user_screen_work_in_progress": "Work in progress",
+  "settings_screen_categories_title": "Categories",
+  "settings_screen_categories_description": "Manage your categories. \nAdd / Edit / Delete"
 }
