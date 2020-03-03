@@ -94,7 +94,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   _delete() async {
-    if (_transaction.startSubscriptionDate == null) {
+    if (_transaction.transaction.id == null) {
       await MessageDialog.display(
         context,
         backgroundColor: _themeProvider.backgroundColor,
@@ -132,6 +132,79 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               await _bankService.update(newBank);
 
               await _transactionService.delete(_transaction);
+
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    } else {
+      await MessageDialog.display(
+        context,
+        backgroundColor: _themeProvider.backgroundColor,
+        title: Text(
+          AppTranslations.of(context).text("dialog_warning"),
+          style: TextStyle(
+            color: _themeProvider.textColor,
+          ),
+        ),
+        body: Text(
+          AppTranslations.of(context)
+              .text("dialog_warning_delete_subscription"),
+          style: TextStyle(
+            color: _themeProvider.textColor,
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text(
+              AppTranslations.of(context).text("dialog_cancel"),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text(
+              AppTranslations.of(context).text("dialog_one_transaction"),
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+            onPressed: () async {
+              var newBank = _bankProvider.selectedBank;
+              newBank.money -= _transaction.price;
+              await _bankService.update(newBank);
+
+              await _transactionService.delete(_transaction);
+
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text(
+              AppTranslations.of(context).text("dialog_all_transaction"),
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+            onPressed: () async {
+              var transactions = await _transactionService
+                  .getAllFromSubscriptionAndTheSubscription(
+                      _transaction.transaction.id);
+
+              for (var transactionFromSubscription in transactions.where(
+                  (t) => t.id != _transaction.transaction.id)) {
+                await _transactionService.delete(transactionFromSubscription);
+              }
+
+              await _transactionService.delete(transactions
+                  .where((t) => t.id == _transaction.transaction.id)
+                  .toList()[0]);
+
+              _bankProvider.askReloadData();
 
               Navigator.of(context).pop();
               Navigator.of(context).pop();
@@ -178,23 +251,30 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           .where((tt) => tt.title == _categoryController.text)
           .toList()[0];
       var typeTransactionIndex = _typeTransactionsList.indexOf(category);
-      var transaction = Transaction(
-        id: _transaction.id,
-        title: _titleController.text,
-        description: _descriptionController.text,
-        price: _paymentType == 0
-            ? -double.parse(_priceController.text)
-            : double.parse(_priceController.text),
-        date: DateTime.now(),
-        typeTransaction: _typeTransactionsList[typeTransactionIndex],
-        bank: _bankProvider.selectedBank,
-        nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
-        indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
-        startSubscriptionDate: _subscriptionDate,
-      );
 
       var newBank = _bankProvider.selectedBank;
-      if (transaction.startSubscriptionDate == null) {
+      if (_subscriptionDate == null) {
+        // Update transaction
+        var transaction = Transaction(
+          id: _transaction.id,
+          title: _titleController.text,
+          description: _descriptionController.text,
+          price: _paymentType == 0
+              ? -double.parse(_priceController.text)
+              : double.parse(_priceController.text),
+          date: _transaction.date,
+          typeTransaction: _typeTransactionsList[typeTransactionIndex],
+          bank: _bankProvider.selectedBank,
+          nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
+          indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
+          startSubscriptionDate: _subscriptionDate,
+        );
+
+        if (_transaction.transaction != null) {
+          transaction.transaction =
+              Transaction(id: _transaction.transaction.id);
+        }
+
         await _transactionService.update(transaction);
 
         newBank.money -= _transaction.price;
@@ -202,19 +282,139 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             ? -double.parse(_priceController.text)
             : double.parse(_priceController.text);
         await _bankService.update(newBank);
-      } else {
-        // Manage subscription money
-//        var addedTransactions = await _transactionService
-//            .addTransactionsFromSubscription(transaction);
-//
-//        for (var addedTransaction in addedTransactions) {
-//          newBank.money += addedTransaction.price;
-//          await _bankService.update(newBank);
-//        }
-      }
 
-      _bankProvider.askReloadData();
-      Navigator.pop(context);
+        _bankProvider.askReloadData();
+        Navigator.pop(context);
+      } else {
+        // Update subscription
+        await MessageDialog.display(
+          context,
+          backgroundColor: _themeProvider.backgroundColor,
+          title: Text(
+            AppTranslations.of(context).text("dialog_warning"),
+            style: TextStyle(
+              color: _themeProvider.textColor,
+            ),
+          ),
+          body: Text(
+            AppTranslations.of(context)
+                .text("dialog_warning_update_subscription"),
+            style: TextStyle(
+              color: _themeProvider.textColor,
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                AppTranslations.of(context).text("dialog_cancel"),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text(
+                AppTranslations.of(context).text("dialog_one_transaction"),
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onPressed: () async {
+                var transaction = Transaction(
+                  id: _transaction.id,
+                  title: _titleController.text,
+                  description: _descriptionController.text,
+                  price: _paymentType == 0
+                      ? -double.parse(_priceController.text)
+                      : double.parse(_priceController.text),
+                  typeTransaction: _typeTransactionsList[typeTransactionIndex],
+                  date: _transaction.date,
+                  bank: _bankProvider.selectedBank,
+                  transaction: Transaction(id: _transaction.transaction.id),
+                );
+
+                await _transactionService.update(transaction);
+
+                newBank.money -= _transaction.price;
+                newBank.money += _paymentType == 0
+                    ? -double.parse(_priceController.text)
+                    : double.parse(_priceController.text);
+                await _bankService.update(newBank);
+
+                _bankProvider.askReloadData();
+
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text(
+                AppTranslations.of(context).text("dialog_all_transaction"),
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onPressed: () async {
+                var transactions = await _transactionService
+                    .getAllFromSubscriptionAndTheSubscription(
+                        _transaction.transaction.id);
+
+                for (var transactionFromSubscription in transactions) {
+                  if (transactionFromSubscription.id !=
+                      _transaction.transaction.id) {
+                    transactionFromSubscription = Transaction(
+                      id: transactionFromSubscription.id,
+                      title: _titleController.text,
+                      description: _descriptionController.text,
+                      price: _paymentType == 0
+                          ? -double.parse(_priceController.text)
+                          : double.parse(_priceController.text),
+                      date: _transaction.date,
+                      typeTransaction:
+                          _typeTransactionsList[typeTransactionIndex],
+                      bank: _bankProvider.selectedBank,
+                      transaction: Transaction(id: _transaction.transaction.id),
+                    );
+
+                    newBank.money -= _transaction.price;
+                    newBank.money += _paymentType == 0
+                        ? -double.parse(_priceController.text)
+                        : double.parse(_priceController.text);
+                    await _bankService.update(newBank);
+
+                    await _transactionService
+                        .update(transactionFromSubscription);
+                  } else {
+                    transactionFromSubscription = Transaction(
+                      id: transactionFromSubscription.id,
+                      title: _titleController.text,
+                      description: _descriptionController.text,
+                      price: _paymentType == 0
+                          ? -double.parse(_priceController.text)
+                          : double.parse(_priceController.text),
+                      date: _transaction.date,
+                      typeTransaction:
+                          _typeTransactionsList[typeTransactionIndex],
+                      bank: _bankProvider.selectedBank,
+                      nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
+                      indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
+                      startSubscriptionDate: _subscriptionDate,
+                    );
+
+                    await _transactionService
+                        .update(transactionFromSubscription);
+                  }
+                }
+
+                _bankProvider.askReloadData();
+
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
     }
 
     setState(() {

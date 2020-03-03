@@ -171,11 +171,13 @@ class TransactionService {
     var subscriptionDate;
     var subscriptionDate2;
 
-    if (json['start_subscription_date'] != null && json['start_subscription_date'] != "null") {
+    if (json['start_subscription_date'] != null &&
+        json['start_subscription_date'] != "null") {
       subscriptionDate = DateTime.parse(json['start_subscription_date']);
     }
 
-    if (json['t_start_subscription_date'] != null && json['t_start_subscription_date'] != "null") {
+    if (json['t_start_subscription_date'] != null &&
+        json['t_start_subscription_date'] != "null") {
       subscriptionDate2 = DateTime.parse(json['t_start_subscription_date']);
     }
 
@@ -309,6 +311,27 @@ class TransactionService {
         "left join ${Bank.tableName} ON ${Bank.tableName}.id = t1.bank_id "
         "where ${Bank.tableName}.id = $bankId "
         "and t1.nb_day_repeat IS NULL "
+        "order by t1.date asc ");
+
+    return List.generate(result.length, (i) {
+      return _fromJsonQuery(result[i]);
+    });
+  }
+
+  Future<List<Transaction>> getAllFromSubscriptionAndTheSubscription(
+      int subscriptionId) async {
+    var result = await sqlQuery("SELECT t1.id, t1.title, t1.description, "
+        "t1.price, t1.price, t1.date, "
+        "${TypeTransaction.tableName}.id as tt_id, ${TypeTransaction.tableName}.title as tt_title, ${TypeTransaction.tableName}.color as tt_color, "
+        "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency, "
+        "t1.nb_day_repeat, t1.index_type_repeat, t1.start_subscription_date, "
+        "t1.transaction_id, t2.nb_day_repeat as t_nb_day_repeat, t2.index_type_repeat as t_index_type_repeat, t2.start_subscription_date as t_start_subscription_date "
+        "FROM ${Transaction.tableName} as t1 "
+        "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = t1.type_transaction_id "
+        "left join ${Transaction.tableName} as t2 ON t1.transaction_id = t2.id "
+        "left join ${Bank.tableName} ON ${Bank.tableName}.id = t1.bank_id "
+        "where t2.id = $subscriptionId "
+        "or t1.id = $subscriptionId "
         "order by t1.date asc ");
 
     return List.generate(result.length, (i) {
