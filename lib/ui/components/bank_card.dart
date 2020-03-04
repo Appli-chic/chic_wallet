@@ -34,6 +34,20 @@ class _BankCardState extends State<BankCard> {
           fit: BoxFit.cover,
         ),
       );
+    } else if (widget.bank.cardType == "Mastercard") {
+      return Container(
+        width: 50,
+        height: 25,
+        padding: EdgeInsets.only(top: 4, bottom: 4, left: 8, right: 8),
+        decoration: new BoxDecoration(
+          color: _themeProvider.secondColor,
+          borderRadius: new BorderRadius.all(const Radius.circular(4)),
+        ),
+        child: Image.asset(
+          'assets/mastercard.png',
+          fit: BoxFit.contain,
+        ),
+      );
     }
 
     return Container();

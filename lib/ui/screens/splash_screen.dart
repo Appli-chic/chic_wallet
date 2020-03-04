@@ -1,11 +1,15 @@
+import 'package:chic_wallet/localization/app_translations.dart';
 import 'package:chic_wallet/models/db/bank.dart';
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/bank_service.dart';
 import 'package:chic_wallet/services/transaction_service.dart';
+import 'package:chic_wallet/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:local_auth/local_auth.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -17,6 +21,9 @@ class _SplashScreenState extends State<SplashScreen> {
   BankProvider _bankProvider;
   BankService _bankService;
   TransactionService _transactionService;
+
+  final LocalAuthentication auth = LocalAuthentication();
+  final storage = new FlutterSecureStorage();
 
   didChangeDependencies() {
     super.didChangeDependencies();
@@ -31,6 +38,39 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (_bankService == null) {
       _bankService = Provider.of<BankService>(context);
+      _checkIdentity();
+    }
+  }
+
+  _checkIdentity() async {
+    bool isAuthActivated = await storage.read(key: KEY_LOCAL_AUTH) == 'true';
+
+    if(isAuthActivated) {
+      // If auth is activated then we check
+      bool canCheckBiometrics = await auth.canCheckBiometrics;
+      bool _isAuthenticated = false;
+
+      if (canCheckBiometrics) {
+        var availableBiometrics = await auth.getAvailableBiometrics();
+
+        if (availableBiometrics.contains(BiometricType.fingerprint)) {
+          _isAuthenticated = await auth.authenticateWithBiometrics(
+            localizedReason: AppTranslations.of(context).text("scan_finger"),
+            useErrorDialogs: true,
+          );
+        } else {
+          _isAuthenticated = true;
+        }
+      } else {
+        _isAuthenticated = true;
+      }
+
+      if (_isAuthenticated) {
+        _loadData();
+      } else {
+        _checkIdentity();
+      }
+    } else {
       _loadData();
     }
   }

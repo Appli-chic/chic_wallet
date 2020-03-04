@@ -91,5 +91,9 @@
   "chart_screen_subscriptions": "Subscriptions",
   "user_screen_work_in_progress": "Work in progress",
   "settings_screen_categories_title": "Categories",
-  "settings_screen_categories_description": "Manage your categories. \nAdd / Edit / Delete"
+  "settings_screen_categories_description": "Manage your categories. \nAdd / Edit / Delete",
+  "settings_screen_touch_id_title": "Touch ID",
+  "settings_screen_touch_id_description": "Manage your touch ID information. \nActivate / Deactivate",
+  "touch_id_screen_activated": "Finger print activated",
+  "scan_finger": "Scan your fingerprint to authenticate"
 }

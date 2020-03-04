@@ -30,15 +30,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
               left: 16, right: 16, bottom: 16, top: kToolbarHeight),
           child: Column(
             children: <Widget>[
-              SettingCard(
-                title: AppTranslations.of(context)
-                    .text("settings_screen_categories_title"),
-                description: AppTranslations.of(context)
-                    .text("settings_screen_categories_description"),
-                onTap: () async {
-                  await Navigator.pushNamed(context, '/manage_category_screen');
-                  _bankProvider.askReloadData();
-                },
+              Container(
+                margin: EdgeInsets.only(bottom: 16),
+                child: SettingCard(
+                  title: AppTranslations.of(context)
+                      .text("settings_screen_categories_title"),
+                  description: AppTranslations.of(context)
+                      .text("settings_screen_categories_description"),
+                  onTap: () async {
+                    await Navigator.pushNamed(context, '/manage_category_screen');
+                    _bankProvider.askReloadData();
+                  },
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: 16),
+                child: SettingCard(
+                  title: AppTranslations.of(context)
+                      .text("settings_screen_touch_id_title"),
+                  description: AppTranslations.of(context)
+                      .text("settings_screen_touch_id_description"),
+                  onTap: () async {
+                    await Navigator.pushNamed(context, '/settings_touch_id');
+                    _bankProvider.askReloadData();
+                  },
+                ),
               ),
             ],
           ),
