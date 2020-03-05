@@ -248,7 +248,11 @@ class _AddBankScreenState extends State<AddBankScreen> {
           return null;
         }
 
-        _bankProvider.askReloadData();
+        var banks = await _bankService.getAll();
+        _bankProvider.setBanks(banks);
+        _bankProvider.selectBank(banks[banks.length - 1].id);
+
+        _bankProvider.askReloadData(didBankCardChanged: true);
         Navigator.pop(context);
       } else {
         setState(() {
