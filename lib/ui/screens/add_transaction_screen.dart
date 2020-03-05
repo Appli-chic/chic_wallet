@@ -177,7 +177,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               newBank.money -= _transaction.price;
               await _bankService.update(newBank);
 
-              await _transactionService.delete(_transaction);
+              _transaction.isDeactivated = true;
+              await _transactionService.update(_transaction);
 
               Navigator.of(context).pop();
               Navigator.of(context).pop();
@@ -195,8 +196,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   .getAllFromSubscriptionAndTheSubscription(
                       _transaction.transaction.id);
 
-              for (var transactionFromSubscription in transactions.where(
-                  (t) => t.id != _transaction.transaction.id)) {
+              for (var transactionFromSubscription in transactions
+                  .where((t) => t.id != _transaction.transaction.id)) {
                 await _transactionService.delete(transactionFromSubscription);
               }
 

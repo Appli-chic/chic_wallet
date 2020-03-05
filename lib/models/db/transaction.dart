@@ -16,7 +16,9 @@ class Transaction {
   int nbDayRepeat;
   int indexTypeRepeat;
   DateTime startSubscriptionDate;
+  DateTime endSubscriptionDate;
   Transaction transaction;
+  bool isDeactivated;
 
   Transaction({
     this.id,
@@ -29,7 +31,9 @@ class Transaction {
     this.nbDayRepeat,
     this.indexTypeRepeat,
     this.startSubscriptionDate,
+    this.endSubscriptionDate,
     this.transaction,
+    this.isDeactivated,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
@@ -44,7 +48,9 @@ class Transaction {
       nbDayRepeat: json['nb_day_repeat'],
       indexTypeRepeat: json['index_type_repeat'],
       startSubscriptionDate: json['start_subscription_date'],
+      endSubscriptionDate: json['end_subscription_date'],
       transaction: json['transaction'],
+      isDeactivated: json['is_deactivated'],
     );
   }
 
@@ -60,7 +66,9 @@ class Transaction {
     data['nb_day_repeat'] = this.nbDayRepeat;
     data['index_type_repeat'] = this.indexTypeRepeat;
     data['start_subscription_date'] = this.startSubscriptionDate;
+    data['end_subscription_date'] = this.endSubscriptionDate;
     data['transaction'] = this.transaction;
+    data['is_deactivated'] = this.isDeactivated;
     return data;
   }
 
@@ -89,7 +97,9 @@ class Transaction {
       'nb_day_repeat': this.nbDayRepeat,
       'index_type_repeat': this.indexTypeRepeat,
       'start_subscription_date': startSubscriptionDateString,
+      'end_subscription_date': endSubscriptionDate,
       'transaction_id': transactionId,
+      'is_deactivated': isDeactivated,
     };
   }
 }

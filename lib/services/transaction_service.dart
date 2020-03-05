@@ -10,8 +10,8 @@ const GENERAL_SELECT = "SELECT t1.id, t1.title, t1.description, "
     "t1.price, t1.price, t1.date, "
     "${TypeTransaction.tableName}.id as tt_id, ${TypeTransaction.tableName}.title as tt_title, ${TypeTransaction.tableName}.color as tt_color, "
     "${TypeTransaction.tableName}.icon_name as tt_icon_name, ${Bank.tableName}.id as bank_id, ${Bank.tableName}.currency as bank_currency, "
-    "t1.nb_day_repeat, t1.index_type_repeat, t1.start_subscription_date, "
-    "t1.transaction_id, t2.nb_day_repeat as t_nb_day_repeat, t2.index_type_repeat as t_index_type_repeat, t2.start_subscription_date as t_start_subscription_date "
+    "t1.nb_day_repeat, t1.index_type_repeat, t1.start_subscription_date, t1.end_subscription_date, "
+    "t1.transaction_id, t1.is_deactivated, t2.nb_day_repeat as t_nb_day_repeat, t2.index_type_repeat as t_index_type_repeat, t2.start_subscription_date as t_start_subscription_date "
     "FROM ${Transaction.tableName} as t1 "
     "left join ${TypeTransaction.tableName} ON ${TypeTransaction.tableName}.id = t1.type_transaction_id "
     "left join ${Transaction.tableName} as t2 ON t1.transaction_id = t2.id "
@@ -31,6 +31,7 @@ class TransactionService {
     var dateFormatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
     String dateString = dateFormatter.format(transaction.date);
     String startSubscriptionDateString;
+    String endSubscriptionDateString;
     int transactionId;
 
     if (transaction.transaction != null) {
@@ -42,12 +43,19 @@ class TransactionService {
           dateFormatter.format(transaction.startSubscriptionDate);
     }
 
+    if (transaction.endSubscriptionDate != null) {
+      endSubscriptionDateString =
+          dateFormatter.format(transaction.endSubscriptionDate);
+    }
+
     await sqlQuery("UPDATE ${Transaction.tableName} "
         "SET title = '${transaction.title}', description = '${transaction.description}', "
         "price = ${transaction.price}, date = '$dateString', "
         "nb_day_repeat = ${transaction.nbDayRepeat}, index_type_repeat = ${transaction.indexTypeRepeat},"
-        "start_subscription_date = '$startSubscriptionDateString', bank_id = ${transaction.bank.id}, "
-        "type_transaction_id = ${transaction.typeTransaction.id}, transaction_id = $transactionId "
+        "start_subscription_date = '$startSubscriptionDateString', end_subscription_date = '$endSubscriptionDateString', "
+        "bank_id = ${transaction.bank.id}, "
+        "type_transaction_id = ${transaction.typeTransaction.id}, transaction_id = $transactionId, "
+        "is_deactivated = ${transaction.isDeactivated ? 1 : 0} "
         "WHERE ${Transaction.tableName}.id = ${transaction.id} ");
   }
 
@@ -162,11 +170,17 @@ class TransactionService {
   Transaction _fromJsonQuery(dynamic json) {
     var date = DateTime.parse(json['date']);
     var subscriptionDate;
+    var enSubscriptionDate;
     var subscriptionDate2;
 
     if (json['start_subscription_date'] != null &&
         json['start_subscription_date'] != "null") {
       subscriptionDate = DateTime.parse(json['start_subscription_date']);
+    }
+
+    if (json['end_subscription_date'] != null &&
+        json['end_subscription_date'] != "null") {
+      enSubscriptionDate = DateTime.parse(json['end_subscription_date']);
     }
 
     if (json['t_start_subscription_date'] != null &&
@@ -183,6 +197,8 @@ class TransactionService {
       nbDayRepeat: json['nb_day_repeat'],
       indexTypeRepeat: json['index_type_repeat'],
       startSubscriptionDate: subscriptionDate,
+      endSubscriptionDate: enSubscriptionDate,
+      isDeactivated: json['is_deactivated'] == 1,
       typeTransaction: TypeTransaction(
         id: json['tt_id'],
         title: json['tt_title'],
@@ -209,7 +225,8 @@ class TransactionService {
             "and t1.transaction_id IS NOT NULL "
             "and t1.price < 0 "
             "and strftime('%m', t1.date) = '${date.month < 10 ? "0${date.month}" : date.month}' "
-            "and strftime('%Y', t1.date) = '${date.year}' ");
+            "and strftime('%Y', t1.date) = '${date.year}' "
+            "and (t1.is_deactivated != 1 || t1.is_deactivated IS NULL) ");
 
     return List.generate(result.length, (i) {
       return _fromJsonQuery(result[i]);
@@ -223,7 +240,8 @@ class TransactionService {
             "and t1.nb_day_repeat IS NULL "
             "and t1.price < 0 "
             "and strftime('%m', t1.date) = '${date.month < 10 ? "0${date.month}" : date.month}' "
-            "and strftime('%Y', t1.date) = '${date.year}' ");
+            "and strftime('%Y', t1.date) = '${date.year}' "
+            "and (t1.is_deactivated != 1 || t1.is_deactivated IS NULL) ");
 
     return List.generate(result.length, (i) {
       return _fromJsonQuery(result[i]);
@@ -234,9 +252,10 @@ class TransactionService {
     var result = await sqlQuery(GENERAL_SELECT +
         "where ${Bank.tableName}.id = $bankId "
             "and t1.nb_day_repeat IS NULL "
+            "and (t1.is_deactivated != 1 || t1.is_deactivated IS NULL) "
             "order by t1.date desc "
             "limit $pagination "
-            "offset ${page * pagination}");
+            "offset ${page * pagination} ");
 
     return List.generate(result.length, (i) {
       return _fromJsonQuery(result[i]);
@@ -248,6 +267,7 @@ class TransactionService {
     var result = await sqlQuery(GENERAL_SELECT +
         "where ${Bank.tableName}.id = $bankId "
             "and tt_id = $typeTransactionId "
+            "and (t1.is_deactivated != 1 || t1.is_deactivated IS NULL) "
             "order by t1.date asc ");
 
     return List.generate(result.length, (i) {
@@ -259,6 +279,7 @@ class TransactionService {
     var result = await sqlQuery(GENERAL_SELECT +
         "where ${Bank.tableName}.id = $bankId "
             "and t1.nb_day_repeat IS NULL "
+            "and (t1.is_deactivated != 1 || t1.is_deactivated IS NULL) "
             "order by t1.date asc ");
 
     return List.generate(result.length, (i) {
@@ -271,6 +292,7 @@ class TransactionService {
     var result = await sqlQuery(GENERAL_SELECT +
         "where t2.id = $subscriptionId "
             "or t1.id = $subscriptionId "
+            "and (t1.is_deactivated != 1 || t1.is_deactivated IS NULL) "
             "order by t1.date asc ");
 
     return List.generate(result.length, (i) {
