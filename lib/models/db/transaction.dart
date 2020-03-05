@@ -50,7 +50,7 @@ class Transaction {
       startSubscriptionDate: json['start_subscription_date'],
       endSubscriptionDate: json['end_subscription_date'],
       transaction: json['transaction'],
-      isDeactivated: json['is_deactivated'],
+      isDeactivated: json['is_deactivated'] == 1,
     );
   }
 
@@ -76,14 +76,26 @@ class Transaction {
     var dateFormatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
     String dateString = dateFormatter.format(this.date);
     String startSubscriptionDateString;
+    String endSubscriptionDateString;
     int transactionId;
+    bool isDeactivated = false;
 
-    if(this.transaction != null) {
+    if (this.transaction != null) {
       transactionId = this.transaction.id;
     }
 
-    if(this.startSubscriptionDate != null) {
-      startSubscriptionDateString = dateFormatter.format(this.startSubscriptionDate);
+    if (this.startSubscriptionDate != null) {
+      startSubscriptionDateString =
+          dateFormatter.format(this.startSubscriptionDate);
+    }
+
+    if (this.endSubscriptionDate != null) {
+      endSubscriptionDateString =
+          dateFormatter.format(this.endSubscriptionDate);
+    }
+
+    if (this.isDeactivated != null) {
+      isDeactivated = this.isDeactivated;
     }
 
     return {
@@ -97,9 +109,9 @@ class Transaction {
       'nb_day_repeat': this.nbDayRepeat,
       'index_type_repeat': this.indexTypeRepeat,
       'start_subscription_date': startSubscriptionDateString,
-      'end_subscription_date': endSubscriptionDate,
+      'end_subscription_date': endSubscriptionDateString,
       'transaction_id': transactionId,
-      'is_deactivated': isDeactivated,
+      'is_deactivated': isDeactivated ? 1 : 0,
     };
   }
 }

@@ -43,11 +43,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TextEditingController _categoryController = TextEditingController();
   TextEditingController _repeatController = TextEditingController();
   TextEditingController _repeatDateController = TextEditingController();
+  TextEditingController _endDateController = TextEditingController();
 
   int _paymentType = 0;
   int _indexRepeat = -1;
   int _nbRepeat = -1;
   DateTime _subscriptionDate;
+  DateTime _endSubscriptionDate;
 
   bool _updateInfoSet = false;
   Transaction _transaction;
@@ -82,6 +84,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   _onSubscriptionDateSelected(DateTime date) {
     setState(() {
       _subscriptionDate = date;
+    });
+  }
+
+  _onEndSubscriptionDateSelected(DateTime date) {
+    setState(() {
+      _endSubscriptionDate = date;
     });
   }
 
@@ -198,6 +206,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
               for (var transactionFromSubscription in transactions
                   .where((t) => t.id != _transaction.transaction.id)) {
+                var newBank = _bankProvider.selectedBank;
+                newBank.money -= transactionFromSubscription.price;
+                await _bankService.update(newBank);
+
                 await _transactionService.delete(transactionFromSubscription);
               }
 
@@ -269,6 +281,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
           indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
           startSubscriptionDate: _subscriptionDate,
+          endSubscriptionDate: _endSubscriptionDate,
         );
 
         if (_transaction.transaction != null) {
@@ -400,6 +413,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
                       indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
                       startSubscriptionDate: _subscriptionDate,
+                      endSubscriptionDate: _endSubscriptionDate,
                     );
 
                     await _transactionService
@@ -474,6 +488,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         nbDayRepeat: _nbRepeat == -1 ? null : _nbRepeat,
         indexTypeRepeat: _indexRepeat == -1 ? null : _indexRepeat,
         startSubscriptionDate: _subscriptionDate,
+        endSubscriptionDate: _endSubscriptionDate,
       );
 
       var transactionId = await _transactionService.save(transaction);
@@ -593,8 +608,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       var dateFormatter = DateFormat("MM/dd/yyyy");
       String dateString =
           dateFormatter.format(_transaction.transaction.startSubscriptionDate);
+
       _repeatDateController.text = dateString;
       _subscriptionDate = _transaction.transaction.startSubscriptionDate;
+
+      if (_transaction.transaction.endSubscriptionDate != null) {
+        String endDateString =
+            dateFormatter.format(_transaction.transaction.endSubscriptionDate);
+        _endDateController.text = endDateString;
+        _endSubscriptionDate = _transaction.transaction.endSubscriptionDate;
+      }
     }
 
     if (_transaction.price >= 0) {
@@ -756,6 +779,21 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                     .text("add_transaction_subscription_date"),
                                 onDateSelected: _onSubscriptionDateSelected,
                                 defaultDate: _subscriptionDate,
+                                dateFormatString: "MM/dd/yyyy",
+                              ),
+                            )
+                          : Container(),
+                      _repeatController.text.isNotEmpty
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 16, bottom: 16),
+                              child: TextFieldUnderline(
+                                controller: _endDateController,
+                                fieldType: TextFieldType.date,
+                                hint: AppTranslations.of(context).text(
+                                    "add_transaction_end_subscription_date"),
+                                onDateSelected: _onEndSubscriptionDateSelected,
+                                defaultDate: _endSubscriptionDate,
                                 dateFormatString: "MM/dd/yyyy",
                               ),
                             )

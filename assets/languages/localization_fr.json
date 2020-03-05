@@ -42,6 +42,7 @@
   "add_transaction_type": "Catégorie",
   "add_transaction_repeat": "Répéter",
   "add_transaction_subscription_date": "Date d'abonnement",
+  "add_transaction_end_subscription_date": "Date de fin d'abonnement",
   "add_transaction_add": "Ajouter",
   "add_transaction_edit": "Modifier",
   "add_transaction_delete": "Supprimer",
