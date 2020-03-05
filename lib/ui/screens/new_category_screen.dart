@@ -1,6 +1,8 @@
 import 'package:chic_wallet/localization/app_translations.dart';
+import 'package:chic_wallet/models/db/transaction.dart';
 import 'package:chic_wallet/models/db/type_transaction.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
+import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/services/type_transaction_service.dart';
 import 'package:chic_wallet/ui/components/app_bar_image.dart';
 import 'package:chic_wallet/ui/components/error_form.dart';
@@ -38,6 +40,24 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
     }
   }
 
+  Future<bool> _checkIfTitleExists() async {
+    return (await _typeTransactionService
+            .getAllFromTitle(_titleController.text))
+        .isEmpty;
+  }
+
+  Future<bool> _checkIfColorExists() async {
+    return (await _typeTransactionService
+            .getAllFromColor(TypeTransaction.colorToString(_pickerColor)))
+        .isEmpty;
+  }
+
+  Future<bool> _checkIfIconExists() async {
+    return (await _typeTransactionService
+            .getAllFromIcon(iconDataToString(_icon)))
+        .isEmpty;
+  }
+
   _edit() async {
     bool isValid = true;
     List<String> errorList = [];
@@ -47,6 +67,27 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
       isValid = false;
       errorList
           .add(AppTranslations.of(context).text("add_category_empty_title"));
+    }
+
+    // Check title exists
+    if (!await _checkIfTitleExists()) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_category_title_exists"));
+    }
+
+    // Check color exists
+    if (!await _checkIfColorExists()) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_category_color_exists"));
+    }
+
+    // Check icon exists
+    if (!await _checkIfIconExists()) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_category_icon_exists"));
     }
 
     if (isValid) {
@@ -75,6 +116,27 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
       isValid = false;
       errorList
           .add(AppTranslations.of(context).text("add_category_empty_title"));
+    }
+
+    // Check title exists
+    if (!await _checkIfTitleExists()) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_category_title_exists"));
+    }
+
+    // Check color exists
+    if (!await _checkIfColorExists()) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_category_color_exists"));
+    }
+
+    // Check icon exists
+    if (!await _checkIfIconExists()) {
+      isValid = false;
+      errorList
+          .add(AppTranslations.of(context).text("add_category_icon_exists"));
     }
 
     if (isValid) {

@@ -11,6 +11,15 @@ class TypeTransactionService {
     this.env,
   });
 
+  TypeTransaction _fromJsonQuery(dynamic json) {
+    return TypeTransaction(
+      id: json['id'],
+      title: json['title'],
+      color: json['color'],
+      iconName: json['icon_name'],
+    );
+  }
+
   Future<void> delete(TypeTransaction typeTransaction) async {
     await sqlQuery(
         "DELETE FROM ${TypeTransaction.tableName} WHERE ${TypeTransaction.tableName}.id = ${typeTransaction.id}");
@@ -30,12 +39,37 @@ class TypeTransactionService {
     var result = await getAllRows(TypeTransaction.tableName);
 
     return List.generate(result.length, (i) {
-      return TypeTransaction(
-        id: result[i]['id'],
-        title: result[i]['title'],
-        color: result[i]['color'],
-        iconName: result[i]['icon_name'],
-      );
+      return _fromJsonQuery(result[i]);
+    });
+  }
+
+  Future<List<TypeTransaction>> getAllFromTitle(String title) async {
+    var result = await sqlQuery("SELECT * "
+            "FROM ${TypeTransaction.tableName} " +
+        "where ${TypeTransaction.tableName}.title = '$title' ");
+
+    return List.generate(result.length, (i) {
+      return _fromJsonQuery(result[i]);
+    });
+  }
+
+  Future<List<TypeTransaction>> getAllFromColor(String color) async {
+    var result = await sqlQuery("SELECT * "
+            "FROM ${TypeTransaction.tableName} " +
+        "where ${TypeTransaction.tableName}.color = '$color' ");
+
+    return List.generate(result.length, (i) {
+      return _fromJsonQuery(result[i]);
+    });
+  }
+
+  Future<List<TypeTransaction>> getAllFromIcon(String icon) async {
+    var result = await sqlQuery("SELECT * "
+            "FROM ${TypeTransaction.tableName} " +
+        "where ${TypeTransaction.tableName}.icon_name = '$icon' ");
+
+    return List.generate(result.length, (i) {
+      return _fromJsonQuery(result[i]);
     });
   }
 }

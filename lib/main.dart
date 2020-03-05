@@ -12,6 +12,7 @@ import 'package:chic_wallet/ui/screens/settings_touch_id_screen.dart';
 import 'package:chic_wallet/ui/screens/signup_screen.dart';
 import 'package:chic_wallet/ui/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +22,13 @@ import 'models/env.dart';
 import 'providers/theme_provider.dart';
 import 'ui/screens/main_screen.dart';
 
-void main() => runApp(App());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(new App());
+  });
+}
 
 class App extends StatefulWidget {
   @override

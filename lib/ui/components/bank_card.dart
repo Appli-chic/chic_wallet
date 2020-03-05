@@ -115,7 +115,9 @@ class _BankCardState extends State<BankCard> {
                   child: Text(
                     moneyString,
                     style: TextStyle(
-                      color: _themeProvider.textColor,
+                      color: widget.bank.money > 0
+                          ? _themeProvider.textColor
+                          : Colors.red,
                       fontWeight: FontWeight.bold,
                       fontSize: moneyString.length > 10 ? 24 : 34,
                     ),

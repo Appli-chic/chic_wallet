@@ -292,7 +292,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
 
     _bankNameController.text = _bank.bankName;
     _cardholderNameController.text = _bank.username;
-    _priceController.text = _bank.money.toString();
+    _priceController.text = _bank.money.toStringAsFixed(2);
     _validityDate = _bank.expirationDate;
     _validityDateController.text = dateString;
     _cardTypeController.text = _bank.cardType;
