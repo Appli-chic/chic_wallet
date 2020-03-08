@@ -10,7 +10,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="chic_wallet"
+        android:label="Chic Wallet"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
