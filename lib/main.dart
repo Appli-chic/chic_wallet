@@ -85,6 +85,7 @@ class _AppState extends State<App> {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Chic Wallet',
         theme: ThemeData(
           primarySwatch: Colors.blue,

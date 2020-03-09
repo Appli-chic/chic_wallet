@@ -5,6 +5,7 @@ import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/bank_service.dart';
 import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/utils/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -45,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
   _checkIdentity() async {
     bool isAuthActivated = await storage.read(key: KEY_LOCAL_AUTH) == 'true';
 
-    if(isAuthActivated) {
+    if (isAuthActivated) {
       // If auth is activated then we check
       bool canCheckBiometrics = await auth.canCheckBiometrics;
       bool _isAuthenticated = false;
@@ -118,12 +119,28 @@ class _SplashScreenState extends State<SplashScreen> {
 
   /// Displays Chic Wallet's logo in the top of this page
   Widget _displayLogo() {
-    return Center(
-      child: Container(
-        width: 150,
-        height: 150,
-        child: Placeholder(),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          width: 150,
+          height: 150,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.asset('assets/logo.png'),
+          ),
+        ),
+        Theme(
+          data: ThemeData(
+            cupertinoOverrideTheme:
+                CupertinoThemeData(brightness: Brightness.dark),
+          ),
+          child: Container(
+            margin: EdgeInsets.only(top: 20),
+            child: CupertinoActivityIndicator(animating: true, radius: 20),
+          ),
+        ),
+      ],
     );
   }
 
