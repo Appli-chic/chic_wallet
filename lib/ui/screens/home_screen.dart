@@ -19,10 +19,18 @@ class _HomeScreenState extends State<HomeScreen>
   BankProvider _bankProvider;
   int _page = 0;
 
-  _loadTransactions() async {
+  _loadTransactions({int page}) async {
     if (_bankProvider.selectedBank != null) {
-      var transactions = await _transactionService.getAllByBankIdPaged(
-          _bankProvider.selectedBank.id, _page);
+      var transactions;
+
+      if (page != null) {
+        transactions = await _transactionService.getAllByBankIdPaged(
+            _bankProvider.selectedBank.id, _page);
+      } else {
+        transactions = await _transactionService.getAllByBankIdPaged(
+            _bankProvider.selectedBank.id, page);
+      }
+
       _bankProvider.setTransactions(transactions);
     }
   }
@@ -92,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen>
         _page = 0;
       }
 
-      _loadTransactions();
+      _loadTransactions(page: 0);
     }
 
     return NotificationListener(
