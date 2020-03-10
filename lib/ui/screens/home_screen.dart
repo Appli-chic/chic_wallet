@@ -1,6 +1,7 @@
 import 'package:chic_wallet/localization/app_translations.dart';
 import 'package:chic_wallet/providers/bank_provider.dart';
 import 'package:chic_wallet/providers/theme_provider.dart';
+import 'package:chic_wallet/services/bank_service.dart';
 import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/ui/components/bank_body.dart';
 import 'package:chic_wallet/ui/components/transaction_card.dart';
@@ -17,7 +18,17 @@ class _HomeScreenState extends State<HomeScreen>
   ThemeProvider _themeProvider;
   TransactionService _transactionService;
   BankProvider _bankProvider;
+  BankService _bankService;
   int _page = 0;
+
+  Future<void> _loadAllBanks() async {
+    var banks = await _bankService.getAll();
+    _bankProvider.setBanks(banks);
+
+    if (_bankProvider.selectedBank == null) {
+      _bankProvider.selectBank(banks[0].id);
+    }
+  }
 
   _loadTransactions({int page}) async {
     if (_bankProvider.selectedBank != null) {
@@ -91,6 +102,7 @@ class _HomeScreenState extends State<HomeScreen>
     _themeProvider = Provider.of<ThemeProvider>(context, listen: true);
     _transactionService = Provider.of<TransactionService>(context);
     _bankProvider = Provider.of<BankProvider>(context, listen: true);
+    _bankService = Provider.of<BankService>(context);
 
     if (_bankProvider.needToReloadHome) {
       _bankProvider.homePageReloaded();
@@ -100,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen>
         _page = 0;
       }
 
+      _loadAllBanks();
       _loadTransactions(page: 0);
     }
 

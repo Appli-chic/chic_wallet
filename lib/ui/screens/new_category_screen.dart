@@ -41,21 +41,48 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
   }
 
   Future<bool> _checkIfTitleExists() async {
-    return (await _typeTransactionService
-            .getAllFromTitle(_titleController.text))
-        .isEmpty;
+    var categories =
+        await _typeTransactionService.getAllFromTitle(_titleController.text);
+
+    if (_typeTransaction != null && _typeTransaction.id != null) {
+      var isSameId =
+          categories.where((c) => c.id == _typeTransaction.id).isNotEmpty &&
+              categories.length < 2;
+
+      return categories.isEmpty || isSameId;
+    } else {
+      return categories.isEmpty;
+    }
   }
 
   Future<bool> _checkIfColorExists() async {
-    return (await _typeTransactionService
-            .getAllFromColor(TypeTransaction.colorToString(_pickerColor)))
-        .isEmpty;
+    var categories = await _typeTransactionService
+        .getAllFromColor(TypeTransaction.colorToString(_pickerColor));
+
+    if (_typeTransaction != null && _typeTransaction.id != null) {
+      var isSameId =
+          categories.where((c) => c.id == _typeTransaction.id).isNotEmpty &&
+              categories.length < 2;
+
+      return categories.isEmpty || isSameId;
+    } else {
+      return categories.isEmpty;
+    }
   }
 
   Future<bool> _checkIfIconExists() async {
-    return (await _typeTransactionService
-            .getAllFromIcon(iconDataToString(_icon)))
-        .isEmpty;
+    var categories =
+        await _typeTransactionService.getAllFromIcon(iconDataToString(_icon));
+
+    if (_typeTransaction != null && _typeTransaction.id != null) {
+      var isSameId =
+          categories.where((c) => c.id == _typeTransaction.id).isNotEmpty &&
+              categories.length < 2;
+
+      return categories.isEmpty || isSameId;
+    } else {
+      return categories.isEmpty;
+    }
   }
 
   _edit() async {
@@ -272,8 +299,11 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Center(
                         child: Text(
-                          AppTranslations.of(context)
-                              .text("add_category_title"),
+                          _typeTransaction == null
+                              ? AppTranslations.of(context)
+                                  .text("add_category_title")
+                              : AppTranslations.of(context)
+                                  .text("update_category_title"),
                           style: TextStyle(
                             color: _themeProvider.textColor,
                             fontSize: 24,

@@ -68,6 +68,7 @@
   "add_transaction_repeat_every_many_year": "Every {} years",
   "manage_category_title": "Categories",
   "add_category_title": "New Category",
+  "update_category_title": "Update Category",
   "add_category_save": "Add",
   "add_category_edit": "Update",
   "add_category_title_hint": "Title",
