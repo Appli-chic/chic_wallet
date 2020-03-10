@@ -5,6 +5,7 @@ import 'package:chic_wallet/providers/theme_provider.dart';
 import 'package:chic_wallet/services/bank_service.dart';
 import 'package:chic_wallet/services/transaction_service.dart';
 import 'package:chic_wallet/utils/constants.dart';
+import 'package:chic_wallet/utils/sqlite.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,6 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _checkIdentity() async {
+    await openCWDatabase();
     bool isAuthActivated = await storage.read(key: KEY_LOCAL_AUTH) == 'true';
 
     if (isAuthActivated) {

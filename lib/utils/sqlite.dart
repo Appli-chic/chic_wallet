@@ -6,8 +6,10 @@ import 'package:path/path.dart';
 
 import 'constants.dart';
 
-Future<Database> openCWDatabase() async {
-  return openDatabase(
+Database db;
+
+openCWDatabase() async {
+  db = await openDatabase(
     join(await getDatabasesPath(), DATABASE_NAME),
     version: 1,
     onCreate: (db, version) async {
@@ -33,8 +35,6 @@ Future<Database> openCWDatabase() async {
 /// A row should be an entity transformed into a map using the
 /// function called 'toMap()'.
 Future<int> addRow(String tableName, Map<String, dynamic> row) async {
-  final Database db = await openCWDatabase();
-
   try {
     int insertedId = await db.insert(
       tableName,
@@ -42,62 +42,41 @@ Future<int> addRow(String tableName, Map<String, dynamic> row) async {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
-    await db.close();
-
     return insertedId;
   } catch (e) {
     print(e);
-    await db.close();
-
     return -1;
   }
 }
 
 Future<void> updateRow(String tableName, Map<String, dynamic> row) async {
-  final Database db = await openCWDatabase();
-
   try {
     await db.update(
       tableName,
       row,
       conflictAlgorithm: ConflictAlgorithm.abort,
     );
-
-    await db.close();
   } catch (e) {
     print(e);
-    await db.close();
   }
 }
 
 Future<List<dynamic>> sqlQuery(String query) async {
-  final Database db = await openCWDatabase();
-
   try {
-    var result = await db.rawQuery(query);
-
-    await db.close();
-
-    return result;
+    return await db.rawQuery(query);
   } catch (e) {
     print(e);
-    await db.close();
 
     return List();
   }
 }
 
 Future<List<dynamic>> getAllRows(String tableName) async {
-  final Database db = await openCWDatabase();
-
   try {
-    var result = await db.query(tableName);
-
-    await db.close();
-    return result;
+    return await db.query(tableName);
   } catch (e) {
     print(e);
-    await db.close();
+
     return List();
   }
 }
